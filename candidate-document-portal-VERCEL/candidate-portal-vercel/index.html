@@ -162,10 +162,6 @@
       <div class="field"><label class="field-label" for="c1Join">Current / Last Company Joining Date</label><input type="date" id="c1Join" name="c1Join" /></div>
       <div class="field"><label class="field-label" for="c1Left">Current / Last Company Left Date</label><input type="date" id="c1Left" name="c1Left" /></div>
       <div class="field"><label class="field-label" for="c1Desig">Current / Last Company Designation / Department</label><input type="text" id="c1Desig" name="c1Desig" /></div>
-      <div class="field"><label class="field-label" for="c2Name">Previous Company Name</label><input type="text" id="c2Name" name="c2Name" /></div>
-      <div class="field"><label class="field-label" for="c2Join">Previous Company Joining Date</label><input type="date" id="c2Join" name="c2Join" /></div>
-      <div class="field"><label class="field-label" for="c2Left">Previous Company Left Date</label><input type="date" id="c2Left" name="c2Left" /></div>
-      <div class="field"><label class="field-label" for="c2Desig">Previous Company Designation / Department</label><input type="text" id="c2Desig" name="c2Desig" /></div>
     </div>
   </div>
 
@@ -177,7 +173,7 @@
 
   <div class="card">
     <div class="card-head"><span class="step-badge">10</span><h2>Review &amp; submit</h2></div>
-    <div class="progress-head"><span class="label">Documents uploaded</span><span class="count" id="progressText">0 of 13 uploaded</span></div>
+    <div class="progress-head"><span class="label">Documents uploaded</span><span class="count" id="progressText">0 of 11 uploaded</span></div>
     <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
     <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit documents to HR</button>
     <button type="button" class="secondary-btn" id="downloadBtn">Save a copy for myself</button>
@@ -202,22 +198,20 @@ const SUBMIT_ENDPOINT = "/api/submit";
 const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbx_I81kkz2uynrA_MFNlQYBnH0J1BrUPH4WIDYTpRk1vttbhpgjE4bu3VH8GNJyCL4/exec";
 const MAX_BYTES = 25 * 1024 * 1024;
 
-const FIELDS = [{id:"title",label:"Title",req:false},{id:"candidateName",label:"Name as per Aadhaar Card",req:true},{id:"dob",label:"Date of birth",req:false},{id:"gender",label:"Gender",req:false},{id:"personalNumber",label:"Personal number",req:false},{id:"candidateEmail",label:"Personal email ID",req:true},{id:"maritalStatus",label:"Marital status",req:false},{id:"bloodGroup",label:"Blood group",req:false},{id:"tshirt",label:"T-shirt size",req:false},{id:"highestQual",label:"Highest qualification",req:false},{id:"highestDegree",label:"Highest degree",req:false},{id:"university",label:"University name",req:false},{id:"passingYear",label:"Passing year",req:false},{id:"l_plot",label:"Plot",req:false},{id:"l_area",label:"Area",req:false},{id:"l_street",label:"Street",req:false},{id:"l_town",label:"Town",req:false},{id:"l_city",label:"City",req:false},{id:"l_district",label:"District",req:false},{id:"l_pin",label:"Pin",req:false},{id:"l_state",label:"State",req:false},{id:"p_plot",label:"Plot",req:false},{id:"p_area",label:"Area",req:false},{id:"p_street",label:"Street",req:false},{id:"p_town",label:"Town",req:false},{id:"p_city",label:"City",req:false},{id:"p_district",label:"District",req:false},{id:"p_pin",label:"Pin",req:false},{id:"p_state",label:"State",req:false},{id:"bankName",label:"Bank name",req:false},{id:"accNo",label:"A/C no.",req:false},{id:"ifsc",label:"IFSC code",req:false},{id:"pan",label:"PAN number",req:false},{id:"aadhaar",label:"Aadhaar number",req:false},{id:"uan",label:"UAN no.",req:false},{id:"pf",label:"PF no.",req:false},{id:"esic",label:"ESIC number",req:false},{id:"father",label:"Father name",req:false},{id:"mother",label:"Mother name",req:false},{id:"spouse",label:"Spouse name",req:false},{id:"spouseDob",label:"Spouse DOB",req:false},{id:"child1",label:"Name of 1st child",req:false},{id:"child1Gender",label:"Gender of 1st child",req:false},{id:"child1Dob",label:"DOB of 1st child",req:false},{id:"child2",label:"Name of 2nd child",req:false},{id:"child2Gender",label:"Gender of 2nd child",req:false},{id:"child2Dob",label:"DOB of 2nd child",req:false},{id:"emgName",label:"Emergency contact person",req:false},{id:"emgRel",label:"Relationship with contact person",req:false},{id:"emgMobile",label:"Emergency contact mobile number",req:false},{id:"totalExp",label:"Total experience (years) before joining Ideal",req:false},{id:"c1Name",label:"Current / Last Company Name",req:false},{id:"c1Join",label:"Current / Last Company Joining Date",req:false},{id:"c1Left",label:"Current / Last Company Left Date",req:false},{id:"c1Desig",label:"Current / Last Company Designation / Department",req:false},{id:"c2Name",label:"Previous Company Name",req:false},{id:"c2Join",label:"Previous Company Joining Date",req:false},{id:"c2Left",label:"Previous Company Left Date",req:false},{id:"c2Desig",label:"Previous Company Designation / Department",req:false}];
+const FIELDS = [{id:"title",label:"Title",req:false},{id:"candidateName",label:"Name as per Aadhaar Card",req:true},{id:"dob",label:"Date of birth",req:false},{id:"gender",label:"Gender",req:false},{id:"personalNumber",label:"Personal number",req:false},{id:"candidateEmail",label:"Personal email ID",req:true},{id:"maritalStatus",label:"Marital status",req:false},{id:"bloodGroup",label:"Blood group",req:false},{id:"tshirt",label:"T-shirt size",req:false},{id:"highestQual",label:"Highest qualification",req:false},{id:"highestDegree",label:"Highest degree",req:false},{id:"university",label:"University name",req:false},{id:"passingYear",label:"Passing year",req:false},{id:"l_plot",label:"Plot",req:false},{id:"l_area",label:"Area",req:false},{id:"l_street",label:"Street",req:false},{id:"l_town",label:"Town",req:false},{id:"l_city",label:"City",req:false},{id:"l_district",label:"District",req:false},{id:"l_pin",label:"Pin",req:false},{id:"l_state",label:"State",req:false},{id:"p_plot",label:"Plot",req:false},{id:"p_area",label:"Area",req:false},{id:"p_street",label:"Street",req:false},{id:"p_town",label:"Town",req:false},{id:"p_city",label:"City",req:false},{id:"p_district",label:"District",req:false},{id:"p_pin",label:"Pin",req:false},{id:"p_state",label:"State",req:false},{id:"bankName",label:"Bank name",req:false},{id:"accNo",label:"A/C no.",req:false},{id:"ifsc",label:"IFSC code",req:false},{id:"pan",label:"PAN number",req:false},{id:"aadhaar",label:"Aadhaar number",req:false},{id:"uan",label:"UAN no.",req:false},{id:"pf",label:"PF no.",req:false},{id:"esic",label:"ESIC number",req:false},{id:"father",label:"Father name",req:false},{id:"mother",label:"Mother name",req:false},{id:"spouse",label:"Spouse name",req:false},{id:"spouseDob",label:"Spouse DOB",req:false},{id:"child1",label:"Name of 1st child",req:false},{id:"child1Gender",label:"Gender of 1st child",req:false},{id:"child1Dob",label:"DOB of 1st child",req:false},{id:"child2",label:"Name of 2nd child",req:false},{id:"child2Gender",label:"Gender of 2nd child",req:false},{id:"child2Dob",label:"DOB of 2nd child",req:false},{id:"emgName",label:"Emergency contact person",req:false},{id:"emgRel",label:"Relationship with contact person",req:false},{id:"emgMobile",label:"Emergency contact mobile number",req:false},{id:"totalExp",label:"Total experience (years) before joining Ideal",req:false},{id:"c1Name",label:"Current / Last Company Name",req:false},{id:"c1Join",label:"Current / Last Company Joining Date",req:false},{id:"c1Left",label:"Current / Last Company Left Date",req:false},{id:"c1Desig",label:"Current / Last Company Designation / Department",req:false}];
 
 const documents = [
   { id:"appt_current", name:"Appointment letter – current/last company" },
   { id:"payslips_current", name:"Last 3 months' payslips – current/last company" },
   { id:"increment_current", name:"Last increment letter – current/last company" },
-  { id:"relieving_prev", name:"Relieving letter – previous company" },
-  { id:"payslips_prev", name:"Payslips / increment letter – previous company" },
-  { id:"appt_prev", name:"Appointment letter – previous company" },
+  { id:"relieving_prev", name:"Relieving letter – current/last company" },
   { id:"aadhar", name:"Aadhaar card" },
   { id:"pan", name:"PAN card" },
   { id:"qualification", name:"Highest qualification certificate" },
   { id:"insurance_cert", name:"Insurance certificate" },
   { id:"resume", name:"Updated resume" },
   { id:"cibil", name:"CIBIL score screenshot" },
-  { id:"cheque", name:"Cancelled cheque (HDFC Bank cheque preferred, if available)" }
+  { id:"cheque", name:"Cancelled cheque" }
 ];
 
 const form = document.getElementById("hrForm");
