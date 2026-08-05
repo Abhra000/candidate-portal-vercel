@@ -1,18 +1,19 @@
-// Vercel Serverless Function: emails HR two clean download links (combined PDF + ZIP).
+// Vercel Serverless Function: emails HR two clean download links (combined PDF + ZIP)
+// via Microsoft 365 SMTP, sending FROM your own @idealinsurance.in mailbox.
 //
-// The browser uploads a merged PDF and a ZIP to Supabase, then calls this with both
-// file paths. We email HR links to our own /api/download route (base64 path, no token,
-// no ".zip"/".pdf" in the URL) so Gmail's outbound filter won't block the message.
+// Sending from your own domain to your own colleagues means the mail is internal and
+// won't be spam-filtered/quarantined the way a personal Gmail sender was.
 //
-// Environment variables (set in the Vercel dashboard → Settings → Environment Variables):
-//   GMAIL_USER                 -> Gmail address that sends the mail
-//   GMAIL_APP_PASSWORD         -> 16-char Gmail App Password for that SAME account
+// Environment variables (Vercel → Settings → Environment Variables):
+//   SMTP_USER                  -> hr.training@idealinsurance.in  (the sending mailbox)
+//   SMTP_PASS                  -> that mailbox's password (or an app password)
+//   SMTP_HOST                  -> optional, default smtp.office365.com
+//   SMTP_PORT                  -> optional, default 587
 //   HR_TO                      -> primary recipient
 //   HR_CC                      -> optional comma-separated CC list
 //   SUPABASE_URL               -> https://xxxx.supabase.co   (used by /api/download)
-//   SUPABASE_SERVICE_ROLE_KEY  -> the project's service_role key (used by /api/download)
-//   SITE_URL                   -> your site's address, e.g. https://your-app.vercel.app
-//                                 (recommended; otherwise Vercel's own URL is used)
+//   SUPABASE_SERVICE_ROLE_KEY  -> Supabase service_role key   (used by /api/download)
+//   SITE_URL                   -> your site, e.g. https://candidateportal.vercel.app
 
 const nodemailer = require("nodemailer");
 
@@ -33,9 +34,9 @@ module.exports = async (req, res) => {
 
     if (!pdfPath && !zipPath) return res.status(400).send("Missing file path");
 
-    const { GMAIL_USER, GMAIL_APP_PASSWORD, HR_TO, HR_CC } = process.env;
-    if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
-      console.error("Missing Gmail env vars");
+    const { SMTP_USER, SMTP_PASS, HR_TO, HR_CC } = process.env;
+    if (!SMTP_USER || !SMTP_PASS) {
+      console.error("Missing SMTP env vars");
       return res.status(500).send("Email is not configured on the server.");
     }
 
@@ -44,14 +45,17 @@ module.exports = async (req, res) => {
       (process.env.VERCEL_PROJECT_PRODUCTION_URL ? "https://" + process.env.VERCEL_PROJECT_PRODUCTION_URL : "") ||
       (process.env.VERCEL_URL ? "https://" + process.env.VERCEL_URL : "")
     ).replace(/\/+$/, "");
-
     const link = (path) => site + "/api/download?id=" + encodeURIComponent(Buffer.from(path, "utf8").toString("base64"));
     const pdfUrl = pdfPath ? link(pdfPath) : "";
     const zipUrl = zipPath ? link(zipPath) : "";
 
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD }
+      host: process.env.SMTP_HOST || "smtp.office365.com",
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: false,          // STARTTLS is negotiated on 587
+      requireTLS: true,
+      auth: { user: SMTP_USER, pass: SMTP_PASS },
+      tls: { ciphers: "TLSv1.2" }
     });
 
     const when = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
@@ -59,8 +63,8 @@ module.exports = async (req, res) => {
       '<a href="' + url + '" style="background:#17324D;color:#fff;text-decoration:none;padding:11px 20px;border-radius:8px;display:inline-block;margin:4px 8px 4px 0">' + label + "</a>";
 
     await transporter.sendMail({
-      from: '"Document Portal" <' + GMAIL_USER + '>',
-      to: HR_TO || GMAIL_USER,
+      from: '"Ideal Insurance HR" <' + SMTP_USER + '>',   // must match the authenticated mailbox
+      to: HR_TO || SMTP_USER,
       cc: HR_CC || undefined,
       replyTo: candidateEmail || undefined,
       subject: "New candidate documents - " + candidateName,
