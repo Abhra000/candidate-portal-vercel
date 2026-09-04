@@ -291,7 +291,13 @@ async function buildMergedPdf(safeName){
 }
 function collectFields(){
   const data={};
-  FIELDS.forEach(function(f){ const el=document.getElementById(f.id); data[f.label]= el ? el.value.trim() : ""; });
+  FIELDS.forEach(function(f){
+    const el=document.getElementById(f.id);
+    let key=f.label;
+    if(f.id.indexOf("l_")===0) key="Local - "+f.label;        // local address columns
+    else if(f.id.indexOf("p_")===0) key="Permanent - "+f.label; // permanent address columns
+    data[key]= el ? el.value.trim() : "";
+  });
   return data;
 }
 function showResult(type,msg){
