@@ -6,25 +6,26 @@
 <title>Ideal Insurance Brokers – Document Submission Portal</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{--navy:#17324D;--navy-900:#0F2438;--navy-light:#24486B;--teal:#0E7C7B;--teal-dark:#0A5F5E;--teal-light:#E4F3F2;--bg:#EEF1F5;--card:#fff;--text:#1F2937;--heading:#0F2438;--muted:#6B7280;--faint:#9AA4B2;--border:#E4E8ED;--border-strong:#D3DAE2;--success:#1E8E5A;--success-bg:#EAF7F0;--error:#B91C1C;--error-bg:#FDECEC;--shadow:0 1px 2px rgba(16,32,52,.04),0 8px 24px rgba(16,32,52,.06);--radius:14px;}
   *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%;}
   body{margin:0;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 400px at 50% -120px,rgba(23,50,77,.10),transparent 70%),var(--bg);color:var(--text);line-height:1.5;padding:0 16px 72px;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:680px;margin:0 auto;}
+  .wrap{max-width:960px;margin:0 auto;}
   .header{position:relative;background:#002B5C;color:#fff;border-radius:var(--radius);padding:30px 32px 32px;margin:20px 0 18px;overflow:hidden;box-shadow:var(--shadow);}
   .brand-logo{display:block;width:172px;height:auto;margin-bottom:20px;position:relative;}
   .header::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(14,124,123,.35),transparent 70%);}
   .header .eyebrow{display:inline-block;font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:#8FD6D3;margin-bottom:10px;}
   .header h1{font-size:23px;margin:0 0 8px;font-weight:700;letter-spacing:-.3px;position:relative;}
   .header p{margin:0;font-size:14px;color:#C9D6E3;max-width:42ch;position:relative;}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 26px;margin-bottom:16px;box-shadow:var(--shadow);}
-  .card-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:14px;box-shadow:var(--shadow);}
+  .card-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
   .step-badge{width:28px;height:28px;flex-shrink:0;border-radius:8px;background:var(--teal-light);color:var(--teal-dark);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
   .card h2{font-size:15.5px;margin:0;font-weight:700;color:var(--heading);letter-spacing:-.2px;}
   .card-note{font-size:13px;color:var(--muted);margin:-6px 0 16px;line-height:1.55;}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 16px;}
   @media(max-width:560px){.grid2{grid-template-columns:1fr;}}
-  .field{margin-bottom:14px;} 
+  .field{margin-bottom:11px;} 
   label.field-label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:var(--heading);}
   input[type="text"],input[type="email"],input[type="tel"],input[type="date"],select{width:100%;padding:11px 13px;border:1px solid var(--border-strong);border-radius:10px;font-size:14px;color:var(--text);background:#FCFDFE;transition:border-color .15s,box-shadow .15s;}
   input:focus,select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,124,123,.14);background:#fff;}
@@ -55,6 +56,12 @@
   .footer .lock{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:500;} .footer .lock svg{width:13px;height:13px;}
   .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:8px;}
   @keyframes spin{to{transform:rotate(360deg);}}
+.hr-tools{position:absolute;top:16px;right:18px;display:flex;gap:8px;z-index:3}
+.hr-ic{width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.hr-ic:hover{background:rgba(255,255,255,.22)}
+.hr-ic svg{width:17px;height:17px}
+.hr-ic.chosen{background:#0E7C7B;border-color:#0E7C7B}
+.hr-status{position:absolute;top:56px;right:18px;font-size:11px;color:#C9D6E3;max-width:220px;text-align:right;z-index:3}
 </style>
 </head>
 <body>
@@ -63,156 +70,154 @@
     <img class="brand-logo" src="data:image/png;base64,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" alt="Ideal Insurance Brokers Pvt. Ltd." />
     <span class="eyebrow">Pre-Joining Formalities</span>
     <h1>Document Submission Portal</h1>
-    <p>Please complete your details and upload the documents below. Everything is stored securely and sent to our HR team.</p>
+    <p>Please complete your details and upload the documents in each section. Everything is stored securely and sent to our HR team.</p>
+    <div class="hr-tools" title="HR: bulk candidate upload">
+      <input type="file" id="bulkFile" accept=".xlsx,.xls,.csv" style="display:none" />
+      <button type="button" id="downloadTemplate" class="hr-ic" title="Download sample template" aria-label="Download sample template"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></button>
+      <button type="button" id="bulkChoose" class="hr-ic" title="Choose Excel/CSV to bulk-upload" aria-label="Choose file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l9.19-9.19a3 3 0 0 1 4.24 4.24l-9.2 9.19a1 1 0 0 1-1.41-1.41l8.49-8.49"/></svg></button>
+      <button type="button" id="bulkUpload" class="hr-ic" title="Upload rows to Google Sheet" aria-label="Upload rows to sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V7"/><path d="M7 12l5-5 5 5"/><path d="M5 3h14"/></svg></button>
+    </div>
+    <div id="bulkStatus" class="hr-status"></div>
   </div>
-
   <form id="hrForm">
 
   <div class="card">
     <div class="card-head"><span class="step-badge">1</span><h2>Personal details</h2></div>
     <div class="grid2">
-      <div class="field"><label class="field-label" for="title">Title</label><select id="title" name="title"><option value="" disabled selected>Select…</option><option>Mr.</option><option>Mrs.</option><option>Ms.</option></select></div>
-      <div class="field"><label class="field-label" for="candidateName">Name as per Aadhaar Card <span style="color:#B91C1C">*</span></label><input type="text" id="candidateName" name="candidateName" /></div>
-      <div class="field"><label class="field-label" for="dob">Date of birth</label><input type="date" id="dob" name="dob" /></div>
-      <div class="field"><label class="field-label" for="gender">Gender</label><select id="gender" name="gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
-      <div class="field"><label class="field-label" for="personalNumber">Personal number</label><input type="tel" id="personalNumber" name="personalNumber" /></div>
-      <div class="field"><label class="field-label" for="candidateEmail">Personal email ID <span style="color:#B91C1C">*</span></label><input type="email" id="candidateEmail" name="candidateEmail" /></div>
-      <div class="field"><label class="field-label" for="maritalStatus">Marital status</label><select id="maritalStatus" name="maritalStatus"><option value="" disabled selected>Select…</option><option>Married</option><option>Unmarried / Single</option></select></div>
-      <div class="field"><label class="field-label" for="bloodGroup">Blood group</label><select id="bloodGroup" name="bloodGroup"><option value="" disabled selected>Select…</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
-      <div class="field"><label class="field-label" for="tshirt">T-shirt size</label><select id="tshirt" name="tshirt"><option value="" disabled selected>Select…</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>XXXL</option><option>XXXXL</option></select></div>
+      <div class="field" id="field-title"><label class="field-label" for="title">Title</label><select id="title" name="title"><option value="" disabled selected>Select…</option><option>Mr.</option><option>Mrs.</option><option>Ms.</option></select></div>
+      <div class="field" id="field-candidateName"><label class="field-label" for="candidateName">Name as per Aadhaar Card <span style="color:#B91C1C">*</span></label><input type="text" id="candidateName" name="candidateName" /></div>
+      <div class="field" id="field-dob"><label class="field-label" for="dob">Date of birth</label><input type="date" id="dob" name="dob" /></div>
+      <div class="field" id="field-gender"><label class="field-label" for="gender">Gender</label><select id="gender" name="gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
+      <div class="field" id="field-personalNumber"><label class="field-label" for="personalNumber">Personal number</label><input type="tel" id="personalNumber" name="personalNumber" /></div>
+      <div class="field" id="field-candidateEmail"><label class="field-label" for="candidateEmail">Personal email ID <span style="color:#B91C1C">*</span></label><input type="email" id="candidateEmail" name="candidateEmail" /></div>
+      <div class="field" id="field-maritalStatus"><label class="field-label" for="maritalStatus">Marital status</label><select id="maritalStatus" name="maritalStatus"><option value="" disabled selected>Select…</option><option>Married</option><option>Unmarried / Single</option></select></div>
+      <div class="field" id="field-bloodGroup"><label class="field-label" for="bloodGroup">Blood group</label><select id="bloodGroup" name="bloodGroup"><option value="" disabled selected>Select…</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+      <div class="field" id="field-tshirt"><label class="field-label" for="tshirt">T-shirt size</label><select id="tshirt" name="tshirt"><option value="" disabled selected>Select…</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>XXXL</option><option>XXXXL</option></select></div>
     </div>
+    <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px" id="docs-personal"></div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">2</span><h2>Education</h2></div>
     <div class="grid2">
-      <div class="field"><label class="field-label" for="highestQual">Highest qualification</label><input type="text" id="highestQual" name="highestQual" /></div>
-      <div class="field"><label class="field-label" for="highestDegree">Highest degree</label><input type="text" id="highestDegree" name="highestDegree" /></div>
-      <div class="field"><label class="field-label" for="university">University name</label><input type="text" id="university" name="university" /></div>
-      <div class="field"><label class="field-label" for="passingYear">Passing year</label><input type="text" id="passingYear" name="passingYear" /></div>
+      <div class="field" id="field-highestQual"><label class="field-label" for="highestQual">Highest qualification / degree</label><input type="text" id="highestQual" name="highestQual" /></div>
+      <div class="field" id="field-university"><label class="field-label" for="university">University name</label><input type="text" id="university" name="university" /></div>
+      <div class="field" id="field-passingYear"><label class="field-label" for="passingYear">Passing year</label><input type="text" id="passingYear" name="passingYear" /></div>
     </div>
+    <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px" id="docs-education"></div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">3</span><h2>Local address</h2></div>
     <div class="grid2">
-      <div class="field"><label class="field-label" for="l_plot">Plot</label><input type="text" id="l_plot" name="l_plot" /></div>
-      <div class="field"><label class="field-label" for="l_area">Area</label><input type="text" id="l_area" name="l_area" /></div>
-      <div class="field"><label class="field-label" for="l_street">Street</label><input type="text" id="l_street" name="l_street" /></div>
-      <div class="field"><label class="field-label" for="l_town">Town</label><input type="text" id="l_town" name="l_town" /></div>
-      <div class="field"><label class="field-label" for="l_city">City</label><input type="text" id="l_city" name="l_city" /></div>
-      <div class="field"><label class="field-label" for="l_district">District</label><input type="text" id="l_district" name="l_district" /></div>
-      <div class="field"><label class="field-label" for="l_pin">Pin</label><input type="text" id="l_pin" name="l_pin" /></div>
-      <div class="field"><label class="field-label" for="l_state">State</label><input type="text" id="l_state" name="l_state" /></div>
+      <div class="field" id="field-l_plot"><label class="field-label" for="l_plot">Plot</label><input type="text" id="l_plot" name="l_plot" /></div>
+      <div class="field" id="field-l_area"><label class="field-label" for="l_area">Area</label><input type="text" id="l_area" name="l_area" /></div>
+      <div class="field" id="field-l_street"><label class="field-label" for="l_street">Street</label><input type="text" id="l_street" name="l_street" /></div>
+      <div class="field" id="field-l_town"><label class="field-label" for="l_town">Town</label><input type="text" id="l_town" name="l_town" /></div>
+      <div class="field" id="field-l_city"><label class="field-label" for="l_city">City</label><input type="text" id="l_city" name="l_city" /></div>
+      <div class="field" id="field-l_district"><label class="field-label" for="l_district">District</label><input type="text" id="l_district" name="l_district" /></div>
+      <div class="field" id="field-l_pin"><label class="field-label" for="l_pin">Pin</label><input type="text" id="l_pin" name="l_pin" /></div>
+      <div class="field" id="field-l_state"><label class="field-label" for="l_state">State</label><input type="text" id="l_state" name="l_state" /></div>
     </div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">4</span><h2>Permanent address</h2></div>
     <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--heading);margin:-6px 0 14px;cursor:pointer"><input type="checkbox" id="sameAsLocal" style="width:auto;margin:0"> Same as local address</label>
     <div class="grid2">
-      <div class="field"><label class="field-label" for="p_plot">Plot</label><input type="text" id="p_plot" name="p_plot" /></div>
-      <div class="field"><label class="field-label" for="p_area">Area</label><input type="text" id="p_area" name="p_area" /></div>
-      <div class="field"><label class="field-label" for="p_street">Street</label><input type="text" id="p_street" name="p_street" /></div>
-      <div class="field"><label class="field-label" for="p_town">Town</label><input type="text" id="p_town" name="p_town" /></div>
-      <div class="field"><label class="field-label" for="p_city">City</label><input type="text" id="p_city" name="p_city" /></div>
-      <div class="field"><label class="field-label" for="p_district">District</label><input type="text" id="p_district" name="p_district" /></div>
-      <div class="field"><label class="field-label" for="p_pin">Pin</label><input type="text" id="p_pin" name="p_pin" /></div>
-      <div class="field"><label class="field-label" for="p_state">State</label><input type="text" id="p_state" name="p_state" /></div>
+      <div class="field" id="field-p_plot"><label class="field-label" for="p_plot">Plot</label><input type="text" id="p_plot" name="p_plot" /></div>
+      <div class="field" id="field-p_area"><label class="field-label" for="p_area">Area</label><input type="text" id="p_area" name="p_area" /></div>
+      <div class="field" id="field-p_street"><label class="field-label" for="p_street">Street</label><input type="text" id="p_street" name="p_street" /></div>
+      <div class="field" id="field-p_town"><label class="field-label" for="p_town">Town</label><input type="text" id="p_town" name="p_town" /></div>
+      <div class="field" id="field-p_city"><label class="field-label" for="p_city">City</label><input type="text" id="p_city" name="p_city" /></div>
+      <div class="field" id="field-p_district"><label class="field-label" for="p_district">District</label><input type="text" id="p_district" name="p_district" /></div>
+      <div class="field" id="field-p_pin"><label class="field-label" for="p_pin">Pin</label><input type="text" id="p_pin" name="p_pin" /></div>
+      <div class="field" id="field-p_state"><label class="field-label" for="p_state">State</label><input type="text" id="p_state" name="p_state" /></div>
     </div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">5</span><h2>Bank & statutory</h2></div>
+    <p class="card-note">Fetch your CIBIL score screenshot from <a class="cibil-link" href="https://www.paisabazaar.com/cibil-credit-report/" target="_blank" rel="noopener">paisabazaar.com</a> and upload it below.</p>
     <div class="grid2">
-      <div class="field"><label class="field-label" for="bankName">Bank name</label><input type="text" id="bankName" name="bankName" /></div>
-      <div class="field"><label class="field-label" for="accNo">A/C no.</label><input type="text" id="accNo" name="accNo" /></div>
-      <div class="field"><label class="field-label" for="ifsc">IFSC code</label><input type="text" id="ifsc" name="ifsc" /></div>
-      <div class="field"><label class="field-label" for="pan">PAN number</label><input type="text" id="pan" name="pan" /></div>
-      <div class="field"><label class="field-label" for="aadhaar">Aadhaar number</label><input type="text" id="aadhaar" name="aadhaar" /></div>
-      <div class="field"><label class="field-label" for="uan">UAN no.</label><input type="text" id="uan" name="uan" /></div>
-      <div class="field"><label class="field-label" for="pf">PF no.</label><input type="text" id="pf" name="pf" /></div>
-      <div class="field"><label class="field-label" for="esic">ESIC number</label><input type="text" id="esic" name="esic" /></div>
+      <div class="field" id="field-bankName"><label class="field-label" for="bankName">Bank name</label><input type="text" id="bankName" name="bankName" /></div>
+      <div class="field" id="field-accNo"><label class="field-label" for="accNo">A/C no.</label><input type="text" id="accNo" name="accNo" /></div>
+      <div class="field" id="field-ifsc"><label class="field-label" for="ifsc">IFSC code</label><input type="text" id="ifsc" name="ifsc" /></div>
+      <div class="field" id="field-pan"><label class="field-label" for="pan">PAN number</label><input type="text" id="pan" name="pan" /></div>
+      <div class="field" id="field-aadhaar"><label class="field-label" for="aadhaar">Aadhaar number</label><input type="text" id="aadhaar" name="aadhaar" /></div>
+      <div class="field" id="field-uan"><label class="field-label" for="uan">UAN no.</label><input type="text" id="uan" name="uan" /></div>
+      <div class="field" id="field-esic"><label class="field-label" for="esic">ESIC number</label><input type="text" id="esic" name="esic" /></div>
     </div>
+    <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px" id="docs-bank"></div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">6</span><h2>Family</h2></div>
     <div class="grid2">
-      <div class="field"><label class="field-label" for="father">Father name</label><input type="text" id="father" name="father" /></div>
-      <div class="field"><label class="field-label" for="mother">Mother name</label><input type="text" id="mother" name="mother" /></div>
-      <div class="field"><label class="field-label" for="spouse">Spouse name</label><input type="text" id="spouse" name="spouse" /></div>
-      <div class="field"><label class="field-label" for="spouseDob">Spouse DOB</label><input type="date" id="spouseDob" name="spouseDob" /></div>
-      <div class="field"><label class="field-label" for="child1">Name of 1st child</label><input type="text" id="child1" name="child1" /></div>
-      <div class="field"><label class="field-label" for="child1Gender">Gender of 1st child</label><select id="child1Gender" name="child1Gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
-      <div class="field"><label class="field-label" for="child1Dob">DOB of 1st child</label><input type="date" id="child1Dob" name="child1Dob" /></div>
-      <div class="field"><label class="field-label" for="child2">Name of 2nd child</label><input type="text" id="child2" name="child2" /></div>
-      <div class="field"><label class="field-label" for="child2Gender">Gender of 2nd child</label><select id="child2Gender" name="child2Gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
-      <div class="field"><label class="field-label" for="child2Dob">DOB of 2nd child</label><input type="date" id="child2Dob" name="child2Dob" /></div>
+      <div class="field" id="field-father"><label class="field-label" for="father">Father name <span style="color:#B91C1C">*</span></label><input type="text" id="father" name="father" /></div>
+      <div class="field" id="field-mother"><label class="field-label" for="mother">Mother name <span style="color:#B91C1C">*</span></label><input type="text" id="mother" name="mother" /></div>
+      <div class="field" id="field-spouse"><label class="field-label" for="spouse">Spouse name <span id="star-spouse" style="color:#B91C1C;display:none">*</span></label><input type="text" id="spouse" name="spouse" /></div>
+      <div class="field" id="field-spouseDob"><label class="field-label" for="spouseDob">Spouse DOB</label><input type="date" id="spouseDob" name="spouseDob" /></div>
+      <div class="field" id="field-child1"><label class="field-label" for="child1">Name of 1st child</label><input type="text" id="child1" name="child1" /></div>
+      <div class="field" id="field-child1Gender"><label class="field-label" for="child1Gender">Gender of 1st child</label><select id="child1Gender" name="child1Gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
+      <div class="field" id="field-child1Dob"><label class="field-label" for="child1Dob">DOB of 1st child</label><input type="date" id="child1Dob" name="child1Dob" /></div>
+      <div class="field" id="field-child2"><label class="field-label" for="child2">Name of 2nd child</label><input type="text" id="child2" name="child2" /></div>
+      <div class="field" id="field-child2Gender"><label class="field-label" for="child2Gender">Gender of 2nd child</label><select id="child2Gender" name="child2Gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
+      <div class="field" id="field-child2Dob"><label class="field-label" for="child2Dob">DOB of 2nd child</label><input type="date" id="child2Dob" name="child2Dob" /></div>
     </div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">7</span><h2>Emergency contact</h2></div>
     <div class="grid2">
-      <div class="field"><label class="field-label" for="emgName">Emergency contact person</label><input type="text" id="emgName" name="emgName" /></div>
-      <div class="field"><label class="field-label" for="emgRel">Relationship with contact person</label><input type="text" id="emgRel" name="emgRel" /></div>
-      <div class="field"><label class="field-label" for="emgMobile">Emergency contact mobile number</label><input type="tel" id="emgMobile" name="emgMobile" /></div>
+      <div class="field" id="field-emgName"><label class="field-label" for="emgName">Emergency contact person</label><input type="text" id="emgName" name="emgName" /></div>
+      <div class="field" id="field-emgRel"><label class="field-label" for="emgRel">Relationship with contact person</label><input type="text" id="emgRel" name="emgRel" /></div>
+      <div class="field" id="field-emgMobile"><label class="field-label" for="emgMobile">Emergency contact mobile number</label><input type="tel" id="emgMobile" name="emgMobile" /></div>
     </div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">8</span><h2>Work experience</h2></div>
     <div class="grid2">
-      <div class="field"><label class="field-label" for="totalExp">Total experience (years) before joining Ideal</label><input type="text" id="totalExp" name="totalExp" /></div>
-      <div class="field"><label class="field-label" for="c1Name">Current / Last Company Name</label><input type="text" id="c1Name" name="c1Name" /></div>
-      <div class="field"><label class="field-label" for="c1Join">Current / Last Company Joining Date</label><input type="date" id="c1Join" name="c1Join" /></div>
-      <div class="field"><label class="field-label" for="c1Left">Current / Last Company Left Date</label><input type="date" id="c1Left" name="c1Left" /></div>
-      <div class="field"><label class="field-label" for="c1Desig">Current / Last Company Designation / Department</label><input type="text" id="c1Desig" name="c1Desig" /></div>
+      <div class="field" id="field-totalExp"><label class="field-label" for="totalExp">Total experience (years) before joining Ideal</label><input type="text" id="totalExp" name="totalExp" /></div>
+      <div class="field" id="field-c1Name"><label class="field-label" for="c1Name">Current / Last Company Name</label><input type="text" id="c1Name" name="c1Name" /></div>
+      <div class="field" id="field-c1Join"><label class="field-label" for="c1Join">Current / Last Company Joining Date</label><input type="date" id="c1Join" name="c1Join" /></div>
+      <div class="field" id="field-c1Left"><label class="field-label" for="c1Left">Current / Last Company Left Date</label><input type="date" id="c1Left" name="c1Left" /></div>
+      <div class="field" id="field-c1Desig"><label class="field-label" for="c1Desig">Current / Last Company Designation / Department</label><input type="text" id="c1Desig" name="c1Desig" /></div>
     </div>
+    <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px" id="docs-work"></div>
   </div>
 
   <div class="card">
-    <div class="card-head"><span class="step-badge">9</span><h2>Upload your documents</h2></div>
-    <p class="card-note">Upload whichever of these apply to you — PDF, JPG or PNG. Also fetch your CIBIL score screenshot from <a class="cibil-link" href="https://www.paisabazaar.com/cibil-credit-report/" target="_blank" rel="noopener">paisabazaar.com</a> and upload it below.</p>
-    <div id="docList"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-head"><span class="step-badge">10</span><h2>Review &amp; submit</h2></div>
+    <div class="card-head"><span class="step-badge">9</span><h2>Review &amp; submit</h2></div>
     <div class="progress-head"><span class="label">Documents uploaded</span><span class="count" id="progressText">0 of 12 uploaded</span></div>
     <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
     <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit documents to HR</button>
     <button type="button" class="secondary-btn" id="downloadBtn">Save a copy for myself</button>
-    <p class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>Your documents are combined into one PDF (and a ZIP of the originals) and sent to HR. Total size under 25&nbsp;MB — compress very large files if needed.</span></p>
+    <p class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>Your uploads are combined into one PDF (and a ZIP of the originals) and sent to HR. Total size under 25&nbsp;MB — compress very large files if needed.</span></p>
     <div class="result-box" id="resultBox"></div>
   </div>
   </form>
-
   <div class="footer">
     <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Your information is transmitted securely to HR only.</span>
     <div style="margin-top:6px;">© Ideal Insurance Brokers. For assistance, contact your HR representative.</div>
   </div>
 </div>
-
 <script>
-// ===== Config =====
 const SUPABASE_URL = "https://mokgrqaecgjtchndkpvs.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1va2dycWFlY2dqdGNobmRrcHZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDY1MzEsImV4cCI6MjEwMDcyMjUzMX0.uUOGOq42wF1w-IORzveuG1xLmdGoubOBo92TMEfJyvU";
 const SUPABASE_BUCKET = "candidate-docs";
 const SUBMIT_ENDPOINT = "/api/submit";
-// Paste your deployed Google Apps Script web-app URL between the quotes (see guide).
 const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbx_I81kkz2uynrA_MFNlQYBnH0J1BrUPH4WIDYTpRk1vttbhpgjE4bu3VH8GNJyCL4/exec";
 const MAX_BYTES = 25 * 1024 * 1024;
 
-const FIELDS = [{id:"title",label:"Title",req:false},{id:"candidateName",label:"Name as per Aadhaar Card",req:true},{id:"dob",label:"Date of birth",req:false},{id:"gender",label:"Gender",req:false},{id:"personalNumber",label:"Personal number",req:false},{id:"candidateEmail",label:"Personal email ID",req:true},{id:"maritalStatus",label:"Marital status",req:false},{id:"bloodGroup",label:"Blood group",req:false},{id:"tshirt",label:"T-shirt size",req:false},{id:"highestQual",label:"Highest qualification",req:false},{id:"highestDegree",label:"Highest degree",req:false},{id:"university",label:"University name",req:false},{id:"passingYear",label:"Passing year",req:false},{id:"l_plot",label:"Plot",req:false},{id:"l_area",label:"Area",req:false},{id:"l_street",label:"Street",req:false},{id:"l_town",label:"Town",req:false},{id:"l_city",label:"City",req:false},{id:"l_district",label:"District",req:false},{id:"l_pin",label:"Pin",req:false},{id:"l_state",label:"State",req:false},{id:"p_plot",label:"Plot",req:false},{id:"p_area",label:"Area",req:false},{id:"p_street",label:"Street",req:false},{id:"p_town",label:"Town",req:false},{id:"p_city",label:"City",req:false},{id:"p_district",label:"District",req:false},{id:"p_pin",label:"Pin",req:false},{id:"p_state",label:"State",req:false},{id:"bankName",label:"Bank name",req:false},{id:"accNo",label:"A/C no.",req:false},{id:"ifsc",label:"IFSC code",req:false},{id:"pan",label:"PAN number",req:false},{id:"aadhaar",label:"Aadhaar number",req:false},{id:"uan",label:"UAN no.",req:false},{id:"pf",label:"PF no.",req:false},{id:"esic",label:"ESIC number",req:false},{id:"father",label:"Father name",req:false},{id:"mother",label:"Mother name",req:false},{id:"spouse",label:"Spouse name",req:false},{id:"spouseDob",label:"Spouse DOB",req:false},{id:"child1",label:"Name of 1st child",req:false},{id:"child1Gender",label:"Gender of 1st child",req:false},{id:"child1Dob",label:"DOB of 1st child",req:false},{id:"child2",label:"Name of 2nd child",req:false},{id:"child2Gender",label:"Gender of 2nd child",req:false},{id:"child2Dob",label:"DOB of 2nd child",req:false},{id:"emgName",label:"Emergency contact person",req:false},{id:"emgRel",label:"Relationship with contact person",req:false},{id:"emgMobile",label:"Emergency contact mobile number",req:false},{id:"totalExp",label:"Total experience (years) before joining Ideal",req:false},{id:"c1Name",label:"Current / Last Company Name",req:false},{id:"c1Join",label:"Current / Last Company Joining Date",req:false},{id:"c1Left",label:"Current / Last Company Left Date",req:false},{id:"c1Desig",label:"Current / Last Company Designation / Department",req:false}];
-
+const FIELDS = [{id:"title",label:"Title",req:false},{id:"candidateName",label:"Name as per Aadhaar Card",req:true},{id:"dob",label:"Date of birth",req:false},{id:"gender",label:"Gender",req:false},{id:"personalNumber",label:"Personal number",req:false},{id:"candidateEmail",label:"Personal email ID",req:true},{id:"maritalStatus",label:"Marital status",req:false},{id:"bloodGroup",label:"Blood group",req:false},{id:"tshirt",label:"T-shirt size",req:false},{id:"highestQual",label:"Highest qualification / degree",req:false},{id:"university",label:"University name",req:false},{id:"passingYear",label:"Passing year",req:false},{id:"l_plot",label:"Plot",req:false},{id:"l_area",label:"Area",req:false},{id:"l_street",label:"Street",req:false},{id:"l_town",label:"Town",req:false},{id:"l_city",label:"City",req:false},{id:"l_district",label:"District",req:false},{id:"l_pin",label:"Pin",req:false},{id:"l_state",label:"State",req:false},{id:"p_plot",label:"Plot",req:false},{id:"p_area",label:"Area",req:false},{id:"p_street",label:"Street",req:false},{id:"p_town",label:"Town",req:false},{id:"p_city",label:"City",req:false},{id:"p_district",label:"District",req:false},{id:"p_pin",label:"Pin",req:false},{id:"p_state",label:"State",req:false},{id:"bankName",label:"Bank name",req:false},{id:"accNo",label:"A/C no.",req:false},{id:"ifsc",label:"IFSC code",req:false},{id:"pan",label:"PAN number",req:false},{id:"aadhaar",label:"Aadhaar number",req:false},{id:"uan",label:"UAN no.",req:false},{id:"esic",label:"ESIC number",req:false},{id:"father",label:"Father name",req:true},{id:"mother",label:"Mother name",req:true},{id:"spouse",label:"Spouse name",req:false},{id:"spouseDob",label:"Spouse DOB",req:false},{id:"child1",label:"Name of 1st child",req:false},{id:"child1Gender",label:"Gender of 1st child",req:false},{id:"child1Dob",label:"DOB of 1st child",req:false},{id:"child2",label:"Name of 2nd child",req:false},{id:"child2Gender",label:"Gender of 2nd child",req:false},{id:"child2Dob",label:"DOB of 2nd child",req:false},{id:"emgName",label:"Emergency contact person",req:false},{id:"emgRel",label:"Relationship with contact person",req:false},{id:"emgMobile",label:"Emergency contact mobile number",req:false},{id:"totalExp",label:"Total experience (years) before joining Ideal",req:false},{id:"c1Name",label:"Current / Last Company Name",req:false},{id:"c1Join",label:"Current / Last Company Joining Date",req:false},{id:"c1Left",label:"Current / Last Company Left Date",req:false},{id:"c1Desig",label:"Current / Last Company Designation / Department",req:false}];
 const documents = [
-  { id:"appt_current", name:"Appointment letter – current/last company" },
-  { id:"payslips_current", name:"Last 3 months' payslips – current/last company" },
-  { id:"increment_current", name:"Last increment letter – current/last company" },
-  { id:"relieving_prev", name:"Relieving letter – current/last company" },
-  { id:"aadhar", name:"Aadhaar card" },
-  { id:"pan", name:"PAN card" },
-  { id:"qualification", name:"Highest qualification certificate" },
-  { id:"insurance_cert", name:"Insurance certificate" },
-  { id:"resume", name:"Updated resume" },
-  { id:"cibil", name:"CIBIL score screenshot" },
-  { id:"cheque", name:"Cancelled cheque" },
-  { id:"photo", name:"Passport size photo" }
+  { id:"photo", name:"Passport size photo", container:"docs-personal" },
+  { id:"resume", name:"Updated resume", container:"docs-personal" },
+  { id:"qualification", name:"Highest qualification certificate", container:"docs-education" },
+  { id:"aadhar", name:"Aadhaar card", container:"docs-bank" },
+  { id:"pan", name:"PAN card", container:"docs-bank" },
+  { id:"cibil", name:"CIBIL score screenshot", container:"docs-bank" },
+  { id:"cheque", name:"Cancelled cheque", container:"docs-bank" },
+  { id:"appt_current", name:"Appointment letter – current/last company", container:"docs-work" },
+  { id:"payslips_current", name:"Last 3 months' payslips – current/last company", container:"docs-work" },
+  { id:"increment_current", name:"Last increment letter – current/last company", container:"docs-work" },
+  { id:"relieving_prev", name:"Relieving letter – current/last company", container:"docs-work" },
+  { id:"insurance_cert", name:"Insurance certificate", container:"docs-work" }
 ];
 
 const form = document.getElementById("hrForm");
@@ -221,8 +226,8 @@ const FILE_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 const CHECK_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
 function buildList(){
-  const c=document.getElementById("docList");
   documents.forEach(function(doc){
+    const c=document.getElementById(doc.container); if(!c) return;
     const row=document.createElement("div"); row.className="doc-row"; row.id="row-"+doc.id;
     row.innerHTML='<div class="doc-icon" id="icon-'+doc.id+'">'+FILE_ICON+'</div>'+
       '<div class="doc-info"><div class="doc-name">'+doc.name+'</div><div class="doc-status" id="status-'+doc.id+'">No file selected</div></div>'+
@@ -243,25 +248,31 @@ function updateProgress(){
   document.getElementById("progressText").textContent=done+" of "+total+" uploaded";
   let ok=done>0;
   FIELDS.forEach(function(f){ if(f.req){ const el=document.getElementById(f.id); if(!el||!el.value.trim()) ok=false; } });
+  var m=document.getElementById("maritalStatus");
+  if(m && m.value==="Married"){ var sp=document.getElementById("spouse"); if(!sp||!sp.value.trim()) ok=false; }
   document.getElementById("submitBtn").disabled=!ok;
 }
-FIELDS.forEach(function(f){ const el=document.getElementById(f.id); if(el) el.addEventListener("input",updateProgress); });
-buildList(); updateProgress();
+function applyMarital(){
+  var m=document.getElementById("maritalStatus").value;
+  var hide = (m==="Unmarried / Single");
+  var ids=["spouse","spouseDob","child1","child1Gender","child1Dob","child2","child2Gender","child2Dob"];
+  ids.forEach(function(id){
+    var w=document.getElementById("field-"+id); if(w) w.style.display = hide ? "none" : "";
+    if(hide){ var el=document.getElementById(id); if(el) el.value=""; }
+  });
+  var star=document.getElementById("star-spouse"); if(star) star.style.display = (m==="Married") ? "" : "none";
+  updateProgress();
+}
+FIELDS.forEach(function(f){ var el=document.getElementById(f.id); if(el){ el.addEventListener("input",updateProgress); el.addEventListener("change",updateProgress); } });
+var ms=document.getElementById("maritalStatus"); if(ms){ ms.addEventListener("change",applyMarital); }
+buildList(); applyMarital(); updateProgress();
+
+// Same as local address
 (function(){
   var pairs=[["l_plot","p_plot"],["l_area","p_area"],["l_street","p_street"],["l_town","p_town"],["l_city","p_city"],["l_district","p_district"],["l_pin","p_pin"],["l_state","p_state"]];
   var cb=document.getElementById("sameAsLocal");
-  function apply(){
-    pairs.forEach(function(pr){
-      var L=document.getElementById(pr[0]), P=document.getElementById(pr[1]); if(!L||!P) return;
-      if(cb.checked){ P.value=L.value; P.readOnly=true; P.style.background="#F1F4F8"; P.style.color="#6B7280"; }
-      else { P.readOnly=false; P.style.background="#FCFDFE"; P.style.color=""; }
-    });
-    updateProgress();
-  }
-  if(cb){
-    cb.addEventListener("change",apply);
-    pairs.forEach(function(pr){ var L=document.getElementById(pr[0]); if(L) L.addEventListener("input",function(){ if(cb.checked){ var P=document.getElementById(pr[1]); if(P) P.value=L.value; } }); });
-  }
+  function apply(){ pairs.forEach(function(pr){ var L=document.getElementById(pr[0]),P=document.getElementById(pr[1]); if(!L||!P) return; if(cb.checked){P.value=L.value;P.readOnly=true;P.style.background="#F1F4F8";P.style.color="#6B7280";}else{P.readOnly=false;P.style.background="#FCFDFE";P.style.color="";} }); updateProgress(); }
+  if(cb){ cb.addEventListener("change",apply); pairs.forEach(function(pr){ var L=document.getElementById(pr[0]); if(L) L.addEventListener("input",function(){ if(cb.checked){var P=document.getElementById(pr[1]); if(P) P.value=L.value;} }); }); }
 })();
 
 async function buildZip(safeName){
@@ -270,35 +281,20 @@ async function buildZip(safeName){
   return zip.generateAsync({type:"blob"});
 }
 async function buildMergedPdf(safeName){
-  const { PDFDocument } = PDFLib;
-  const merged=await PDFDocument.create();
+  const { PDFDocument } = PDFLib; const merged=await PDFDocument.create();
   for(const doc of documents){
     const file=uploaded[doc.id]; if(!file) continue;
     const bytes=await file.arrayBuffer(); const nm=file.name.toLowerCase();
     try{
-      if(nm.endsWith(".pdf")){
-        const src=await PDFDocument.load(bytes,{ignoreEncryption:true});
-        const pages=await merged.copyPages(src, src.getPageIndices()); pages.forEach(function(p){merged.addPage(p);});
-      } else if(nm.endsWith(".png")||nm.endsWith(".jpg")||nm.endsWith(".jpeg")){
-        const img = nm.endsWith(".png") ? await merged.embedPng(bytes) : await merged.embedJpg(bytes);
-        const pw=595.28, ph=841.89; const page=merged.addPage([pw,ph]);
-        const s=Math.min((pw-40)/img.width,(ph-40)/img.height,1); const w=img.width*s, h=img.height*s;
-        page.drawImage(img,{x:(pw-w)/2,y:(ph-h)/2,width:w,height:h});
-      }
-    }catch(err){ /* skip unreadable file */ }
+      if(nm.endsWith(".pdf")){ const src=await PDFDocument.load(bytes,{ignoreEncryption:true}); const pages=await merged.copyPages(src,src.getPageIndices()); pages.forEach(function(p){merged.addPage(p);}); }
+      else if(nm.endsWith(".png")||nm.endsWith(".jpg")||nm.endsWith(".jpeg")){ const img=nm.endsWith(".png")?await merged.embedPng(bytes):await merged.embedJpg(bytes); const pw=595.28,ph=841.89; const page=merged.addPage([pw,ph]); const s=Math.min((pw-40)/img.width,(ph-40)/img.height,1); const w=img.width*s,h=img.height*s; page.drawImage(img,{x:(pw-w)/2,y:(ph-h)/2,width:w,height:h}); }
+    }catch(err){}
   }
-  const out=await merged.save();
-  return new Blob([out],{type:"application/pdf"});
+  const out=await merged.save(); return new Blob([out],{type:"application/pdf"});
 }
 function collectFields(){
   const data={};
-  FIELDS.forEach(function(f){
-    const el=document.getElementById(f.id);
-    let key=f.label;
-    if(f.id.indexOf("l_")===0) key="Local - "+f.label;        // local address columns
-    else if(f.id.indexOf("p_")===0) key="Permanent - "+f.label; // permanent address columns
-    data[key]= el ? el.value.trim() : "";
-  });
+  FIELDS.forEach(function(f){ const el=document.getElementById(f.id); let key=f.label; if(f.id.indexOf("l_")===0) key="Local - "+f.label; else if(f.id.indexOf("p_")===0) key="Permanent - "+f.label; data[key]= el ? el.value.trim() : ""; });
   return data;
 }
 function showResult(type,msg){
@@ -307,15 +303,10 @@ function showResult(type,msg){
   box.className="result-box "+type; box.innerHTML=icon+"<span>"+msg+"</span>"; box.style.display="flex"; box.scrollIntoView({behavior:"smooth",block:"center"});
 }
 async function uploadToSupabase(path,blob,type){
-  const r=await fetch(SUPABASE_URL+"/storage/v1/object/"+SUPABASE_BUCKET+"/"+encodeURI(path),{
-    method:"POST",
-    headers:{"Authorization":"Bearer "+SUPABASE_ANON_KEY,"apikey":SUPABASE_ANON_KEY,"Content-Type":type,"x-upsert":"false"},
-    body:blob
-  });
+  const r=await fetch(SUPABASE_URL+"/storage/v1/object/"+SUPABASE_BUCKET+"/"+encodeURI(path),{method:"POST",headers:{"Authorization":"Bearer "+SUPABASE_ANON_KEY,"apikey":SUPABASE_ANON_KEY,"Content-Type":type,"x-upsert":"false"},body:blob});
   if(!r.ok){ throw new Error("upload "+r.status+": "+(await r.text())); }
   return path;
 }
-
 form.addEventListener("submit",async function(e){
   e.preventDefault();
   const name=document.getElementById("candidateName").value.trim();
@@ -326,33 +317,65 @@ form.addEventListener("submit",async function(e){
   function reset(){ btn.disabled=false; btn.textContent="Submit documents to HR"; }
   try{
     const safeName=(name.replace(/[^a-z0-9]+/gi,"_")||"Candidate");
-    const pdfBlob=await buildMergedPdf(safeName);
-    const zipBlob=await buildZip(safeName);
+    const pdfBlob=await buildMergedPdf(safeName); const zipBlob=await buildZip(safeName);
     if(pdfBlob.size>MAX_BYTES || zipBlob.size>MAX_BYTES){ showResult("error","Your documents are too large (over 25 MB). Please compress large PDFs or photos and try again."); reset(); return; }
     const folder=Date.now()+"-"+Math.random().toString(36).slice(2,10);
-    const pdfPath=folder+"/"+safeName+"_Documents.pdf";
-    const zipPath=folder+"/"+safeName+"_Originals.zip";
+    const pdfPath=folder+"/"+safeName+"_Documents.pdf"; const zipPath=folder+"/"+safeName+"_Originals.zip";
     await uploadToSupabase(pdfPath,pdfBlob,"application/pdf");
     await uploadToSupabase(zipPath,zipBlob,"application/zip");
-
-    // Save all field responses to Google Sheet (best-effort, never blocks submission)
-    if(SHEET_ENDPOINT && SHEET_ENDPOINT.indexOf("http")===0){
-      try{ await fetch(SHEET_ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(collectFields())}); }catch(err){}
-    }
-
+    if(SHEET_ENDPOINT && SHEET_ENDPOINT.indexOf("http")===0){ try{ await fetch(SHEET_ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(collectFields())}); }catch(err){} }
     const res=await fetch(SUBMIT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:name,email:email,pdfPath:pdfPath,zipPath:zipPath,size:pdfBlob.size+zipBlob.size})});
     if(res.ok){ btn.innerHTML="&#10003; Submitted"; form.querySelectorAll("input,select,button").forEach(function(el){el.disabled=true;}); window.location.href="thankyou.html"; }
     else{ const d=await res.text(); showResult("error","Your files uploaded, but notifying HR failed (error "+res.status+"). Please contact HR. Details: "+d); reset(); }
   }catch(err){ showResult("error","Could not submit: "+err.message+". Please check your connection and try again."); reset(); }
 });
-
 document.getElementById("downloadBtn").addEventListener("click",async function(){
   const name=document.getElementById("candidateName").value.trim()||"Candidate";
   const safeName=name.replace(/[^a-z0-9]+/gi,"_");
   if(Object.keys(uploaded).length===0){ showResult("error","Attach at least one document first, then you can save a copy."); return; }
-  const pdfBlob=await buildMergedPdf(safeName);
-  const url=URL.createObjectURL(pdfBlob); const a=document.createElement("a"); a.href=url; a.download=safeName+"_Documents.pdf"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  const pdfBlob=await buildMergedPdf(safeName); const url=URL.createObjectURL(pdfBlob); const a=document.createElement("a"); a.href=url; a.download=safeName+"_Documents.pdf"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 });
+
+// ---- Bulk candidate upload (HR) ----
+var TEMPLATE_COLS = FIELDS.map(function(f){
+  if(f.id.indexOf("l_")===0) return "Local - "+f.label;
+  if(f.id.indexOf("p_")===0) return "Permanent - "+f.label;
+  return f.label;
+});
+function csvCell(v){ v=String(v==null?"":v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+var dtBtn=document.getElementById("downloadTemplate");
+if(dtBtn) dtBtn.addEventListener("click",function(){
+  var csv=TEMPLATE_COLS.map(csvCell).join(",")+"\n"+TEMPLATE_COLS.map(function(){return "";}).join(",")+"\n";
+  var blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  var url=URL.createObjectURL(blob); var a=document.createElement("a"); a.href=url; a.download="candidate_bulk_template.csv"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+});
+var buBtn=document.getElementById("bulkUpload");
+if(buBtn) buBtn.addEventListener("click",async function(){
+  var fi=document.getElementById("bulkFile"); var st=document.getElementById("bulkStatus");
+  if(!fi.files[0]){ st.textContent="Choose an Excel or CSV file first."; return; }
+  if(!(SHEET_ENDPOINT && SHEET_ENDPOINT.indexOf("http")===0)){ st.textContent="Sheet endpoint is not configured."; return; }
+  st.textContent="Reading file…";
+  try{
+    var data=await fi.files[0].arrayBuffer();
+    var wb=XLSX.read(data,{type:"array"});
+    var ws=wb.Sheets[wb.SheetNames[0]];
+    var rows=XLSX.utils.sheet_to_json(ws,{defval:""});
+    if(!rows.length){ st.textContent="No rows found in the file."; return; }
+    var n=0;
+    for(var i=0;i<rows.length;i++){
+      var vals=Object.keys(rows[i]).map(function(k){return rows[i][k];}).join("").trim();
+      if(!vals) continue;
+      await fetch(SHEET_ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rows[i])});
+      n++; st.textContent="Uploading… "+n+" of "+rows.length;
+    }
+    st.textContent="Done — sent "+n+" candidate row(s) to the Google Sheet.";
+    fi.value="";
+  }catch(err){ st.textContent="Upload failed: "+err.message; }
+});
+
+var bcBtn=document.getElementById("bulkChoose"); var bFile=document.getElementById("bulkFile");
+if(bcBtn && bFile){ bcBtn.addEventListener("click",function(){ bFile.click(); });
+  bFile.addEventListener("change",function(){ var s=document.getElementById("bulkStatus"); if(bFile.files[0]){ bcBtn.classList.add("chosen"); if(s) s.textContent=bFile.files[0].name; } else { bcBtn.classList.remove("chosen"); if(s) s.textContent=""; } }); }
 </script>
 </body>
 </html>
