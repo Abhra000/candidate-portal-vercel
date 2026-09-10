@@ -6,7 +6,6 @@
 <title>Ideal Insurance Brokers – Document Submission Portal</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{--navy:#17324D;--navy-900:#0F2438;--navy-light:#24486B;--teal:#0E7C7B;--teal-dark:#0A5F5E;--teal-light:#E4F3F2;--bg:#EEF1F5;--card:#fff;--text:#1F2937;--heading:#0F2438;--muted:#6B7280;--faint:#9AA4B2;--border:#E4E8ED;--border-strong:#D3DAE2;--success:#1E8E5A;--success-bg:#EAF7F0;--error:#B91C1C;--error-bg:#FDECEC;--shadow:0 1px 2px rgba(16,32,52,.04),0 8px 24px rgba(16,32,52,.06);--radius:14px;}
   *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%;}
@@ -23,6 +22,7 @@
   .step-badge{width:28px;height:28px;flex-shrink:0;border-radius:8px;background:var(--teal-light);color:var(--teal-dark);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
   .card h2{font-size:15.5px;margin:0;font-weight:700;color:var(--heading);letter-spacing:-.2px;}
   .card-note{font-size:13px;color:var(--muted);margin:-6px 0 16px;line-height:1.55;}
+  .doc-hint{font-size:12.5px;font-weight:400;color:var(--muted);margin-left:8px;}
   .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 16px;}
   @media(max-width:560px){.grid2{grid-template-columns:1fr;}}
   .field{margin-bottom:11px;} 
@@ -56,12 +56,6 @@
   .footer .lock{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:500;} .footer .lock svg{width:13px;height:13px;}
   .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:8px;}
   @keyframes spin{to{transform:rotate(360deg);}}
-.hr-tools{position:absolute;top:16px;right:18px;display:flex;gap:8px;z-index:3}
-.hr-ic{width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
-.hr-ic:hover{background:rgba(255,255,255,.22)}
-.hr-ic svg{width:17px;height:17px}
-.hr-ic.chosen{background:#0E7C7B;border-color:#0E7C7B}
-.hr-status{position:absolute;top:56px;right:18px;font-size:11px;color:#C9D6E3;max-width:220px;text-align:right;z-index:3}
 </style>
 </head>
 <body>
@@ -71,13 +65,6 @@
     <span class="eyebrow">Pre-Joining Formalities</span>
     <h1>Document Submission Portal</h1>
     <p>Please complete your details and upload the documents in each section. Everything is stored securely and sent to our HR team.</p>
-    <div class="hr-tools" title="HR: bulk candidate upload">
-      <input type="file" id="bulkFile" accept=".xlsx,.xls,.csv" style="display:none" />
-      <button type="button" id="downloadTemplate" class="hr-ic" title="Download sample template" aria-label="Download sample template"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></button>
-      <button type="button" id="bulkChoose" class="hr-ic" title="Choose Excel/CSV to bulk-upload" aria-label="Choose file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l9.19-9.19a3 3 0 0 1 4.24 4.24l-9.2 9.19a1 1 0 0 1-1.41-1.41l8.49-8.49"/></svg></button>
-      <button type="button" id="bulkUpload" class="hr-ic" title="Upload rows to Google Sheet" aria-label="Upload rows to sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V7"/><path d="M7 12l5-5 5 5"/><path d="M5 3h14"/></svg></button>
-    </div>
-    <div id="bulkStatus" class="hr-status"></div>
   </div>
   <form id="hrForm">
 
@@ -88,22 +75,22 @@
       <div class="field" id="field-candidateName"><label class="field-label" for="candidateName">Name as per Aadhaar Card <span style="color:#B91C1C">*</span></label><input type="text" id="candidateName" name="candidateName" /></div>
       <div class="field" id="field-dob"><label class="field-label" for="dob">Date of birth</label><input type="date" id="dob" name="dob" /></div>
       <div class="field" id="field-gender"><label class="field-label" for="gender">Gender</label><select id="gender" name="gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
-      <div class="field" id="field-personalNumber"><label class="field-label" for="personalNumber">Personal number</label><input type="tel" id="personalNumber" name="personalNumber" /></div>
-      <div class="field" id="field-candidateEmail"><label class="field-label" for="candidateEmail">Personal email ID <span style="color:#B91C1C">*</span></label><input type="email" id="candidateEmail" name="candidateEmail" /></div>
-      <div class="field" id="field-maritalStatus"><label class="field-label" for="maritalStatus">Marital status</label><select id="maritalStatus" name="maritalStatus"><option value="" disabled selected>Select…</option><option>Married</option><option>Unmarried / Single</option></select></div>
-      <div class="field" id="field-bloodGroup"><label class="field-label" for="bloodGroup">Blood group</label><select id="bloodGroup" name="bloodGroup"><option value="" disabled selected>Select…</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
-      <div class="field" id="field-tshirt"><label class="field-label" for="tshirt">T-shirt size</label><select id="tshirt" name="tshirt"><option value="" disabled selected>Select…</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>XXXL</option><option>XXXXL</option></select></div>
+      <div class="field" id="field-personalNumber"><label class="field-label" for="personalNumber">Personal Number</label><input type="tel" id="personalNumber" name="personalNumber" /></div>
+      <div class="field" id="field-candidateEmail"><label class="field-label" for="candidateEmail">Personal Email ID <span style="color:#B91C1C">*</span></label><input type="email" id="candidateEmail" name="candidateEmail" /></div>
+      <div class="field" id="field-maritalStatus"><label class="field-label" for="maritalStatus">Marital Status</label><select id="maritalStatus" name="maritalStatus"><option value="" disabled selected>Select…</option><option>Married</option><option>Unmarried / Single</option></select></div>
+      <div class="field" id="field-bloodGroup"><label class="field-label" for="bloodGroup">Blood Group</label><select id="bloodGroup" name="bloodGroup"><option value="" disabled selected>Select…</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+      <div class="field" id="field-tshirt"><label class="field-label" for="tshirt">T-Shirt Size</label><select id="tshirt" name="tshirt"><option value="" disabled selected>Select…</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>XXXL</option><option>XXXXL</option></select></div>
     </div>
     <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px" id="docs-personal"></div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">2</span><h2>Education</h2></div>
     <div class="grid2">
-      <div class="field" id="field-highestQual"><label class="field-label" for="highestQual">Highest qualification / degree</label><input type="text" id="highestQual" name="highestQual" /></div>
-      <div class="field" id="field-university"><label class="field-label" for="university">University name</label><input type="text" id="university" name="university" /></div>
-      <div class="field" id="field-passingYear"><label class="field-label" for="passingYear">Passing year</label><input type="text" id="passingYear" name="passingYear" /></div>
+      <div class="field" id="field-highestQual" style="grid-column:1/-1;display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;">
+        <div style="flex:1;min-width:160px;"><label class="field-label" for="highestQual">Highest Degree <span style="color:#B91C1C">*</span></label><input type="text" id="highestQual" name="highestQual" /></div>
+        <div id="docs-education" style="flex:1;min-width:220px;"></div>
+      </div>
     </div>
-    <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px" id="docs-education"></div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">3</span><h2>Local address</h2></div>
@@ -134,45 +121,44 @@
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">5</span><h2>Bank & statutory</h2></div>
-    <p class="card-note">Fetch your CIBIL score screenshot from <a class="cibil-link" href="https://www.paisabazaar.com/cibil-credit-report/" target="_blank" rel="noopener">paisabazaar.com</a> and upload it below.</p>
     <div class="grid2">
-      <div class="field" id="field-bankName"><label class="field-label" for="bankName">Bank name</label><input type="text" id="bankName" name="bankName" /></div>
-      <div class="field" id="field-accNo"><label class="field-label" for="accNo">A/C no.</label><input type="text" id="accNo" name="accNo" /></div>
-      <div class="field" id="field-ifsc"><label class="field-label" for="ifsc">IFSC code</label><input type="text" id="ifsc" name="ifsc" /></div>
-      <div class="field" id="field-pan"><label class="field-label" for="pan">PAN number</label><input type="text" id="pan" name="pan" /></div>
-      <div class="field" id="field-aadhaar"><label class="field-label" for="aadhaar">Aadhaar number</label><input type="text" id="aadhaar" name="aadhaar" /></div>
-      <div class="field" id="field-uan"><label class="field-label" for="uan">UAN no.</label><input type="text" id="uan" name="uan" /></div>
-      <div class="field" id="field-esic"><label class="field-label" for="esic">ESIC number</label><input type="text" id="esic" name="esic" /></div>
+      <div class="field" id="field-bankName"><label class="field-label" for="bankName">Bank Name</label><input type="text" id="bankName" name="bankName" /></div>
+      <div class="field" id="field-accNo"><label class="field-label" for="accNo">A/C No.</label><input type="text" id="accNo" name="accNo" /></div>
+      <div class="field" id="field-ifsc"><label class="field-label" for="ifsc">IFSC Code</label><input type="text" id="ifsc" name="ifsc" /></div>
+      <div class="field" id="field-pan"><label class="field-label" for="pan">PAN Number</label><input type="text" id="pan" name="pan" /></div>
+      <div class="field" id="field-aadhaar"><label class="field-label" for="aadhaar">Aadhaar Number</label><input type="text" id="aadhaar" name="aadhaar" /></div>
+      <div class="field" id="field-uan"><label class="field-label" for="uan">UAN No.</label><input type="text" id="uan" name="uan" /></div>
+      <div class="field" id="field-esic"><label class="field-label" for="esic">ESIC Number</label><input type="text" id="esic" name="esic" /></div>
     </div>
     <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px" id="docs-bank"></div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">6</span><h2>Family</h2></div>
     <div class="grid2">
-      <div class="field" id="field-father"><label class="field-label" for="father">Father name <span style="color:#B91C1C">*</span></label><input type="text" id="father" name="father" /></div>
-      <div class="field" id="field-mother"><label class="field-label" for="mother">Mother name <span style="color:#B91C1C">*</span></label><input type="text" id="mother" name="mother" /></div>
-      <div class="field" id="field-spouse"><label class="field-label" for="spouse">Spouse name <span id="star-spouse" style="color:#B91C1C;display:none">*</span></label><input type="text" id="spouse" name="spouse" /></div>
+      <div class="field" id="field-father"><label class="field-label" for="father">Father Name <span style="color:#B91C1C">*</span></label><input type="text" id="father" name="father" /></div>
+      <div class="field" id="field-mother"><label class="field-label" for="mother">Mother Name <span style="color:#B91C1C">*</span></label><input type="text" id="mother" name="mother" /></div>
+      <div class="field" id="field-spouse"><label class="field-label" for="spouse">Spouse Name <span id="star-spouse" style="color:#B91C1C;display:none">*</span></label><input type="text" id="spouse" name="spouse" /></div>
       <div class="field" id="field-spouseDob"><label class="field-label" for="spouseDob">Spouse DOB</label><input type="date" id="spouseDob" name="spouseDob" /></div>
-      <div class="field" id="field-child1"><label class="field-label" for="child1">Name of 1st child</label><input type="text" id="child1" name="child1" /></div>
-      <div class="field" id="field-child1Gender"><label class="field-label" for="child1Gender">Gender of 1st child</label><select id="child1Gender" name="child1Gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
-      <div class="field" id="field-child1Dob"><label class="field-label" for="child1Dob">DOB of 1st child</label><input type="date" id="child1Dob" name="child1Dob" /></div>
-      <div class="field" id="field-child2"><label class="field-label" for="child2">Name of 2nd child</label><input type="text" id="child2" name="child2" /></div>
-      <div class="field" id="field-child2Gender"><label class="field-label" for="child2Gender">Gender of 2nd child</label><select id="child2Gender" name="child2Gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
-      <div class="field" id="field-child2Dob"><label class="field-label" for="child2Dob">DOB of 2nd child</label><input type="date" id="child2Dob" name="child2Dob" /></div>
+      <div class="field" id="field-child1"><label class="field-label" for="child1">Name Of 1st Child</label><input type="text" id="child1" name="child1" /></div>
+      <div class="field" id="field-child1Gender"><label class="field-label" for="child1Gender">Gender Of 1st Child</label><select id="child1Gender" name="child1Gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
+      <div class="field" id="field-child1Dob"><label class="field-label" for="child1Dob">DOB Of 1st Child</label><input type="date" id="child1Dob" name="child1Dob" /></div>
+      <div class="field" id="field-child2"><label class="field-label" for="child2">Name Of 2nd Child</label><input type="text" id="child2" name="child2" /></div>
+      <div class="field" id="field-child2Gender"><label class="field-label" for="child2Gender">Gender Of 2nd Child</label><select id="child2Gender" name="child2Gender"><option value="" disabled selected>Select…</option><option>Male</option><option>Female</option></select></div>
+      <div class="field" id="field-child2Dob"><label class="field-label" for="child2Dob">DOB Of 2nd Child</label><input type="date" id="child2Dob" name="child2Dob" /></div>
     </div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">7</span><h2>Emergency contact</h2></div>
     <div class="grid2">
-      <div class="field" id="field-emgName"><label class="field-label" for="emgName">Emergency contact person</label><input type="text" id="emgName" name="emgName" /></div>
-      <div class="field" id="field-emgRel"><label class="field-label" for="emgRel">Relationship with contact person</label><input type="text" id="emgRel" name="emgRel" /></div>
-      <div class="field" id="field-emgMobile"><label class="field-label" for="emgMobile">Emergency contact mobile number</label><input type="tel" id="emgMobile" name="emgMobile" /></div>
+      <div class="field" id="field-emgName"><label class="field-label" for="emgName">Emergency Contact Person</label><input type="text" id="emgName" name="emgName" /></div>
+      <div class="field" id="field-emgRel"><label class="field-label" for="emgRel">Relationship With Contact Person</label><input type="text" id="emgRel" name="emgRel" /></div>
+      <div class="field" id="field-emgMobile"><label class="field-label" for="emgMobile">Emergency Contact Mobile Number</label><input type="tel" id="emgMobile" name="emgMobile" /></div>
     </div>
   </div>
   <div class="card">
     <div class="card-head"><span class="step-badge">8</span><h2>Work experience</h2></div>
     <div class="grid2">
-      <div class="field" id="field-totalExp"><label class="field-label" for="totalExp">Total experience (years) before joining Ideal</label><input type="text" id="totalExp" name="totalExp" /></div>
+      <div class="field" id="field-totalExp"><label class="field-label" for="totalExp">Total Experience (Years) Before Joining Ideal</label><input type="text" id="totalExp" name="totalExp" /></div>
       <div class="field" id="field-c1Name"><label class="field-label" for="c1Name">Current / Last Company Name</label><input type="text" id="c1Name" name="c1Name" /></div>
       <div class="field" id="field-c1Join"><label class="field-label" for="c1Join">Current / Last Company Joining Date</label><input type="date" id="c1Join" name="c1Join" /></div>
       <div class="field" id="field-c1Left"><label class="field-label" for="c1Left">Current / Last Company Left Date</label><input type="date" id="c1Left" name="c1Left" /></div>
@@ -204,20 +190,20 @@ const SUBMIT_ENDPOINT = "/api/submit";
 const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbx_I81kkz2uynrA_MFNlQYBnH0J1BrUPH4WIDYTpRk1vttbhpgjE4bu3VH8GNJyCL4/exec";
 const MAX_BYTES = 25 * 1024 * 1024;
 
-const FIELDS = [{id:"title",label:"Title",req:false},{id:"candidateName",label:"Name as per Aadhaar Card",req:true},{id:"dob",label:"Date of birth",req:false},{id:"gender",label:"Gender",req:false},{id:"personalNumber",label:"Personal number",req:false},{id:"candidateEmail",label:"Personal email ID",req:true},{id:"maritalStatus",label:"Marital status",req:false},{id:"bloodGroup",label:"Blood group",req:false},{id:"tshirt",label:"T-shirt size",req:false},{id:"highestQual",label:"Highest qualification / degree",req:false},{id:"university",label:"University name",req:false},{id:"passingYear",label:"Passing year",req:false},{id:"l_plot",label:"Plot",req:false},{id:"l_area",label:"Area",req:false},{id:"l_street",label:"Street",req:false},{id:"l_town",label:"Town",req:false},{id:"l_city",label:"City",req:false},{id:"l_district",label:"District",req:false},{id:"l_pin",label:"Pin",req:false},{id:"l_state",label:"State",req:false},{id:"p_plot",label:"Plot",req:false},{id:"p_area",label:"Area",req:false},{id:"p_street",label:"Street",req:false},{id:"p_town",label:"Town",req:false},{id:"p_city",label:"City",req:false},{id:"p_district",label:"District",req:false},{id:"p_pin",label:"Pin",req:false},{id:"p_state",label:"State",req:false},{id:"bankName",label:"Bank name",req:false},{id:"accNo",label:"A/C no.",req:false},{id:"ifsc",label:"IFSC code",req:false},{id:"pan",label:"PAN number",req:false},{id:"aadhaar",label:"Aadhaar number",req:false},{id:"uan",label:"UAN no.",req:false},{id:"esic",label:"ESIC number",req:false},{id:"father",label:"Father name",req:true},{id:"mother",label:"Mother name",req:true},{id:"spouse",label:"Spouse name",req:false},{id:"spouseDob",label:"Spouse DOB",req:false},{id:"child1",label:"Name of 1st child",req:false},{id:"child1Gender",label:"Gender of 1st child",req:false},{id:"child1Dob",label:"DOB of 1st child",req:false},{id:"child2",label:"Name of 2nd child",req:false},{id:"child2Gender",label:"Gender of 2nd child",req:false},{id:"child2Dob",label:"DOB of 2nd child",req:false},{id:"emgName",label:"Emergency contact person",req:false},{id:"emgRel",label:"Relationship with contact person",req:false},{id:"emgMobile",label:"Emergency contact mobile number",req:false},{id:"totalExp",label:"Total experience (years) before joining Ideal",req:false},{id:"c1Name",label:"Current / Last Company Name",req:false},{id:"c1Join",label:"Current / Last Company Joining Date",req:false},{id:"c1Left",label:"Current / Last Company Left Date",req:false},{id:"c1Desig",label:"Current / Last Company Designation / Department",req:false}];
+const FIELDS = [{id:"title",label:"Title",req:false},{id:"candidateName",label:"Name As Per Aadhaar Card",req:true},{id:"dob",label:"Date Of Birth",req:false},{id:"gender",label:"Gender",req:false},{id:"personalNumber",label:"Personal Number",req:false},{id:"candidateEmail",label:"Personal Email ID",req:true},{id:"maritalStatus",label:"Marital Status",req:false},{id:"bloodGroup",label:"Blood Group",req:false},{id:"tshirt",label:"T-Shirt Size",req:false},{id:"highestQual",label:"Highest Degree",req:true},{id:"l_plot",label:"Plot",req:false},{id:"l_area",label:"Area",req:false},{id:"l_street",label:"Street",req:false},{id:"l_town",label:"Town",req:false},{id:"l_city",label:"City",req:false},{id:"l_district",label:"District",req:false},{id:"l_pin",label:"Pin",req:false},{id:"l_state",label:"State",req:false},{id:"p_plot",label:"Plot",req:false},{id:"p_area",label:"Area",req:false},{id:"p_street",label:"Street",req:false},{id:"p_town",label:"Town",req:false},{id:"p_city",label:"City",req:false},{id:"p_district",label:"District",req:false},{id:"p_pin",label:"Pin",req:false},{id:"p_state",label:"State",req:false},{id:"bankName",label:"Bank Name",req:false},{id:"accNo",label:"A/C No.",req:false},{id:"ifsc",label:"IFSC Code",req:false},{id:"pan",label:"PAN Number",req:false},{id:"aadhaar",label:"Aadhaar Number",req:false},{id:"uan",label:"UAN No.",req:false},{id:"esic",label:"ESIC Number",req:false},{id:"father",label:"Father Name",req:true},{id:"mother",label:"Mother Name",req:true},{id:"spouse",label:"Spouse Name",req:false},{id:"spouseDob",label:"Spouse DOB",req:false},{id:"child1",label:"Name Of 1st Child",req:false},{id:"child1Gender",label:"Gender Of 1st Child",req:false},{id:"child1Dob",label:"DOB Of 1st Child",req:false},{id:"child2",label:"Name Of 2nd Child",req:false},{id:"child2Gender",label:"Gender Of 2nd Child",req:false},{id:"child2Dob",label:"DOB Of 2nd Child",req:false},{id:"emgName",label:"Emergency Contact Person",req:false},{id:"emgRel",label:"Relationship With Contact Person",req:false},{id:"emgMobile",label:"Emergency Contact Mobile Number",req:false},{id:"totalExp",label:"Total Experience (Years) Before Joining Ideal",req:false},{id:"c1Name",label:"Current / Last Company Name",req:false},{id:"c1Join",label:"Current / Last Company Joining Date",req:false},{id:"c1Left",label:"Current / Last Company Left Date",req:false},{id:"c1Desig",label:"Current / Last Company Designation / Department",req:false}];
 const documents = [
-  { id:"photo", name:"Passport size photo", container:"docs-personal" },
-  { id:"resume", name:"Updated resume", container:"docs-personal" },
-  { id:"qualification", name:"Highest qualification certificate", container:"docs-education" },
-  { id:"aadhar", name:"Aadhaar card", container:"docs-bank" },
-  { id:"pan", name:"PAN card", container:"docs-bank" },
-  { id:"cibil", name:"CIBIL score screenshot", container:"docs-bank" },
-  { id:"cheque", name:"Cancelled cheque", container:"docs-bank" },
-  { id:"appt_current", name:"Appointment letter – current/last company", container:"docs-work" },
-  { id:"payslips_current", name:"Last 3 months' payslips – current/last company", container:"docs-work" },
-  { id:"increment_current", name:"Last increment letter – current/last company", container:"docs-work" },
-  { id:"relieving_prev", name:"Relieving letter – current/last company", container:"docs-work" },
-  { id:"insurance_cert", name:"Insurance certificate", container:"docs-work" }
+  { id:"photo", name:"Passport Size Photo", container:"docs-personal", req:true },
+  { id:"resume", name:"Updated Resume", container:"docs-personal", req:true },
+  { id:"qualification", name:"Highest Degree Certificate", container:"docs-education", req:true },
+  { id:"aadhar", name:"Aadhaar Card", container:"docs-bank", req:true },
+  { id:"pan", name:"PAN Card", container:"docs-bank", req:true },
+  { id:"cibil", name:"CIBIL Score Screenshot", container:"docs-bank" },
+  { id:"cheque", name:"Cancelled Cheque", container:"docs-bank", req:true, note:'Fetch your CIBIL score screenshot from <a class="cibil-link" href="https://www.paisabazaar.com/cibil-credit-report/" target="_blank" rel="noopener">paisabazaar.com</a> and upload it below.' },
+  { id:"appt_current", name:"Appointment Letter – Current/Last Company", container:"docs-work" },
+  { id:"payslips_current", name:"Last 3 Months' Payslips – Current/Last Company", container:"docs-work" },
+  { id:"increment_current", name:"Last Increment Letter – Current/Last Company", container:"docs-work" },
+  { id:"relieving_prev", name:"Relieving Letter – Current/Last Company", container:"docs-work" },
+  { id:"insurance_cert", name:"Insurance Certificate", container:"docs-work" }
 ];
 
 const form = document.getElementById("hrForm");
@@ -230,7 +216,7 @@ function buildList(){
     const c=document.getElementById(doc.container); if(!c) return;
     const row=document.createElement("div"); row.className="doc-row"; row.id="row-"+doc.id;
     row.innerHTML='<div class="doc-icon" id="icon-'+doc.id+'">'+FILE_ICON+'</div>'+
-      '<div class="doc-info"><div class="doc-name">'+doc.name+'</div><div class="doc-status" id="status-'+doc.id+'">No file selected</div></div>'+
+      '<div class="doc-info"><div class="doc-name">'+doc.name+(doc.req?' <span style="color:#B91C1C">*</span>':'')+(doc.note?' <span class="doc-hint">'+doc.note+'</span>':'')+'</div><div class="doc-status" id="status-'+doc.id+'">No file selected</div></div>'+
       '<label class="upload-btn" id="btn-'+doc.id+'" for="file-'+doc.id+'">Upload</label>'+
       '<input type="file" id="file-'+doc.id+'" accept=".pdf,.jpg,.jpeg,.png" />';
     c.appendChild(row);
@@ -247,6 +233,7 @@ function updateProgress(){
   document.getElementById("progressFill").style.width=Math.round(done/total*100)+"%";
   document.getElementById("progressText").textContent=done+" of "+total+" uploaded";
   let ok=done>0;
+  documents.forEach(function(d){ if(d.req && !uploaded[d.id]) ok=false; });
   FIELDS.forEach(function(f){ if(f.req){ const el=document.getElementById(f.id); if(!el||!el.value.trim()) ok=false; } });
   var m=document.getElementById("maritalStatus");
   if(m && m.value==="Married"){ var sp=document.getElementById("spouse"); if(!sp||!sp.value.trim()) ok=false; }
@@ -335,47 +322,6 @@ document.getElementById("downloadBtn").addEventListener("click",async function()
   if(Object.keys(uploaded).length===0){ showResult("error","Attach at least one document first, then you can save a copy."); return; }
   const pdfBlob=await buildMergedPdf(safeName); const url=URL.createObjectURL(pdfBlob); const a=document.createElement("a"); a.href=url; a.download=safeName+"_Documents.pdf"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 });
-
-// ---- Bulk candidate upload (HR) ----
-var TEMPLATE_COLS = FIELDS.map(function(f){
-  if(f.id.indexOf("l_")===0) return "Local - "+f.label;
-  if(f.id.indexOf("p_")===0) return "Permanent - "+f.label;
-  return f.label;
-});
-function csvCell(v){ v=String(v==null?"":v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
-var dtBtn=document.getElementById("downloadTemplate");
-if(dtBtn) dtBtn.addEventListener("click",function(){
-  var csv=TEMPLATE_COLS.map(csvCell).join(",")+"\n"+TEMPLATE_COLS.map(function(){return "";}).join(",")+"\n";
-  var blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
-  var url=URL.createObjectURL(blob); var a=document.createElement("a"); a.href=url; a.download="candidate_bulk_template.csv"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-});
-var buBtn=document.getElementById("bulkUpload");
-if(buBtn) buBtn.addEventListener("click",async function(){
-  var fi=document.getElementById("bulkFile"); var st=document.getElementById("bulkStatus");
-  if(!fi.files[0]){ st.textContent="Choose an Excel or CSV file first."; return; }
-  if(!(SHEET_ENDPOINT && SHEET_ENDPOINT.indexOf("http")===0)){ st.textContent="Sheet endpoint is not configured."; return; }
-  st.textContent="Reading file…";
-  try{
-    var data=await fi.files[0].arrayBuffer();
-    var wb=XLSX.read(data,{type:"array"});
-    var ws=wb.Sheets[wb.SheetNames[0]];
-    var rows=XLSX.utils.sheet_to_json(ws,{defval:""});
-    if(!rows.length){ st.textContent="No rows found in the file."; return; }
-    var n=0;
-    for(var i=0;i<rows.length;i++){
-      var vals=Object.keys(rows[i]).map(function(k){return rows[i][k];}).join("").trim();
-      if(!vals) continue;
-      await fetch(SHEET_ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rows[i])});
-      n++; st.textContent="Uploading… "+n+" of "+rows.length;
-    }
-    st.textContent="Done — sent "+n+" candidate row(s) to the Google Sheet.";
-    fi.value="";
-  }catch(err){ st.textContent="Upload failed: "+err.message; }
-});
-
-var bcBtn=document.getElementById("bulkChoose"); var bFile=document.getElementById("bulkFile");
-if(bcBtn && bFile){ bcBtn.addEventListener("click",function(){ bFile.click(); });
-  bFile.addEventListener("change",function(){ var s=document.getElementById("bulkStatus"); if(bFile.files[0]){ bcBtn.classList.add("chosen"); if(s) s.textContent=bFile.files[0].name; } else { bcBtn.classList.remove("chosen"); if(s) s.textContent=""; } }); }
 </script>
 </body>
 </html>
