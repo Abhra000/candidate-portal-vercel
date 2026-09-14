@@ -38,6 +38,7 @@
   .doc-status{font-size:12.5px;color:var(--muted);margin-top:3px;word-break:break-word;} .doc-status.done{color:var(--success);font-weight:500;}
   .upload-btn{flex-shrink:0;background:#fff;color:var(--teal-dark);border:1px solid var(--teal);border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;}
   .upload-btn:hover{background:var(--teal-light);} .upload-btn.done{background:var(--success);color:#fff;border-color:var(--success);}
+  .upload-btn.disabled{opacity:.55;pointer-events:none;}
   input[type="file"]{display:none;}
   .progress-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
   .progress-head .label{font-size:13px;font-weight:600;color:var(--heading);} .progress-head .count{font-size:13px;color:var(--muted);}
@@ -162,7 +163,7 @@
       <div class="field" id="field-c1Name"><label class="field-label" for="c1Name">Current / Last Company Name</label><input type="text" id="c1Name" name="c1Name" /></div>
       <div class="field" id="field-c1Join"><label class="field-label" for="c1Join">Current / Last Company Joining Date</label><input type="date" id="c1Join" name="c1Join" /></div>
       <div class="field" id="field-c1Left"><label class="field-label" for="c1Left">Current / Last Company Left Date</label><input type="date" id="c1Left" name="c1Left" /></div>
-      <div class="field" id="field-c1Desig"><label class="field-label" for="c1Desig" style="white-space:nowrap;font-size:11px">Current / Last Designation / Department</label><input type="text" id="c1Desig" name="c1Desig" /></div>
+      <div class="field" id="field-c1Desig"><label class="field-label" for="c1Desig">Current / Last Company Designation / Department</label><input type="text" id="c1Desig" name="c1Desig" /></div>
     </div>
     <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px" id="docs-work"></div>
   </div>
@@ -190,7 +191,7 @@ const SUBMIT_ENDPOINT = "/api/submit";
 const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbx_I81kkz2uynrA_MFNlQYBnH0J1BrUPH4WIDYTpRk1vttbhpgjE4bu3VH8GNJyCL4/exec";
 const MAX_BYTES = 25 * 1024 * 1024;
 
-const FIELDS = [{id:"title",label:"Title",req:false},{id:"candidateName",label:"Name As Per Aadhaar Card",sheetKey:"Name as per Aadhaar Card",req:true},{id:"dob",label:"Date Of Birth",sheetKey:"Date of birth",req:false},{id:"gender",label:"Gender",req:false},{id:"personalNumber",label:"Personal Number",sheetKey:"Personal number",req:false},{id:"candidateEmail",label:"Personal Email ID",sheetKey:"Personal email ID",req:true},{id:"maritalStatus",label:"Marital Status",sheetKey:"Marital status",req:false},{id:"bloodGroup",label:"Blood Group",sheetKey:"Blood group",req:false},{id:"tshirt",label:"T-Shirt Size",sheetKey:"T-shirt size",req:false},{id:"highestQual",label:"Highest Degree",sheetKey:"Highest degree",req:true},{id:"l_plot",label:"Plot",req:false},{id:"l_area",label:"Area",req:false},{id:"l_street",label:"Street",req:false},{id:"l_town",label:"Town",req:false},{id:"l_city",label:"City",req:false},{id:"l_district",label:"District",req:false},{id:"l_pin",label:"Pin",req:false},{id:"l_state",label:"State",req:false},{id:"p_plot",label:"Plot",req:false},{id:"p_area",label:"Area",req:false},{id:"p_street",label:"Street",req:false},{id:"p_town",label:"Town",req:false},{id:"p_city",label:"City",req:false},{id:"p_district",label:"District",req:false},{id:"p_pin",label:"Pin",req:false},{id:"p_state",label:"State",req:false},{id:"bankName",label:"Bank Name",sheetKey:"Bank name",req:false},{id:"accNo",label:"A/C No.",sheetKey:"A/C no.",req:false},{id:"ifsc",label:"IFSC Code",sheetKey:"IFSC code",req:false},{id:"pan",label:"PAN Number",sheetKey:"PAN number",req:false},{id:"aadhaar",label:"Aadhaar Number",sheetKey:"Aadhaar number",req:false},{id:"uan",label:"UAN No.",sheetKey:"UAN no.",req:false},{id:"esic",label:"ESIC Number",sheetKey:"ESIC number",req:false},{id:"father",label:"Father Name",sheetKey:"Father name",req:true},{id:"mother",label:"Mother Name",sheetKey:"Mother name",req:true},{id:"spouse",label:"Spouse Name",sheetKey:"Spouse name",req:false},{id:"spouseDob",label:"Spouse DOB",req:false},{id:"child1",label:"Name Of 1st Child",sheetKey:"Name of 1st child",req:false},{id:"child1Gender",label:"Gender Of 1st Child",sheetKey:"Gender of 1st child",req:false},{id:"child1Dob",label:"DOB Of 1st Child",sheetKey:"DOB of 1st child",req:false},{id:"child2",label:"Name Of 2nd Child",sheetKey:"Name of 2nd child",req:false},{id:"child2Gender",label:"Gender Of 2nd Child",sheetKey:"Gender of 2nd child",req:false},{id:"child2Dob",label:"DOB Of 2nd Child",sheetKey:"DOB of 2nd child",req:false},{id:"emgName",label:"Emergency Contact Person",sheetKey:"Emergency contact person",req:false},{id:"emgRel",label:"Relationship With Contact Person",sheetKey:"Relationship with contact person",req:false},{id:"emgMobile",label:"Emergency Contact Mobile Number",sheetKey:"Emergency contact mobile number",req:false},{id:"totalExp",label:"Total Experience (Years) Before Joining Ideal",sheetKey:"Total experience (years) before joining Ideal",req:false},{id:"c1Name",label:"Current / Last Company Name",req:false},{id:"c1Join",label:"Current / Last Company Joining Date",req:false},{id:"c1Left",label:"Current / Last Company Left Date",req:false},{id:"c1Desig",label:"Current / Last Company Designation / Department",req:false}];
+const FIELDS = [{id:"title",label:"Title",req:false},{id:"candidateName",label:"Name As Per Aadhaar Card",req:true},{id:"dob",label:"Date Of Birth",req:false},{id:"gender",label:"Gender",req:false},{id:"personalNumber",label:"Personal Number",req:false},{id:"candidateEmail",label:"Personal Email ID",req:true},{id:"maritalStatus",label:"Marital Status",req:false},{id:"bloodGroup",label:"Blood Group",req:false},{id:"tshirt",label:"T-Shirt Size",req:false},{id:"highestQual",label:"Highest Degree",req:true},{id:"l_plot",label:"Plot",req:false},{id:"l_area",label:"Area",req:false},{id:"l_street",label:"Street",req:false},{id:"l_town",label:"Town",req:false},{id:"l_city",label:"City",req:false},{id:"l_district",label:"District",req:false},{id:"l_pin",label:"Pin",req:false},{id:"l_state",label:"State",req:false},{id:"p_plot",label:"Plot",req:false},{id:"p_area",label:"Area",req:false},{id:"p_street",label:"Street",req:false},{id:"p_town",label:"Town",req:false},{id:"p_city",label:"City",req:false},{id:"p_district",label:"District",req:false},{id:"p_pin",label:"Pin",req:false},{id:"p_state",label:"State",req:false},{id:"bankName",label:"Bank Name",req:false},{id:"accNo",label:"A/C No.",req:false},{id:"ifsc",label:"IFSC Code",req:false},{id:"pan",label:"PAN Number",req:false},{id:"aadhaar",label:"Aadhaar Number",req:false},{id:"uan",label:"UAN No.",req:false},{id:"esic",label:"ESIC Number",req:false},{id:"father",label:"Father Name",req:true},{id:"mother",label:"Mother Name",req:true},{id:"spouse",label:"Spouse Name",req:false},{id:"spouseDob",label:"Spouse DOB",req:false},{id:"child1",label:"Name Of 1st Child",req:false},{id:"child1Gender",label:"Gender Of 1st Child",req:false},{id:"child1Dob",label:"DOB Of 1st Child",req:false},{id:"child2",label:"Name Of 2nd Child",req:false},{id:"child2Gender",label:"Gender Of 2nd Child",req:false},{id:"child2Dob",label:"DOB Of 2nd Child",req:false},{id:"emgName",label:"Emergency Contact Person",req:false},{id:"emgRel",label:"Relationship With Contact Person",req:false},{id:"emgMobile",label:"Emergency Contact Mobile Number",req:false},{id:"totalExp",label:"Total Experience (Years) Before Joining Ideal",req:false},{id:"c1Name",label:"Current / Last Company Name",req:false},{id:"c1Join",label:"Current / Last Company Joining Date",req:false},{id:"c1Left",label:"Current / Last Company Left Date",req:false},{id:"c1Desig",label:"Current / Last Company Designation / Department",req:false}];
 const documents = [
   { id:"photo", name:"Passport Size Photo", container:"docs-personal", req:true },
   { id:"resume", name:"Updated Resume", container:"docs-personal", req:true },
@@ -220,10 +221,22 @@ function buildList(){
       '<label class="upload-btn" id="btn-'+doc.id+'" for="file-'+doc.id+'">Upload</label>'+
       '<input type="file" id="file-'+doc.id+'" accept=".pdf,.jpg,.jpeg,.png" />';
     c.appendChild(row);
-    row.querySelector('#file-'+doc.id).addEventListener("change",function(e){
+    row.querySelector('#file-'+doc.id).addEventListener("change",async function(e){
       const file=e.target.files[0]; const st=document.getElementById('status-'+doc.id); const bt=document.getElementById('btn-'+doc.id); const ic=document.getElementById('icon-'+doc.id);
-      if(file){uploaded[doc.id]=file;st.textContent=file.name;st.classList.add("done");bt.textContent="Replace";bt.classList.add("done");row.classList.add("is-done");ic.innerHTML=CHECK_ICON;}
-      else{delete uploaded[doc.id];st.textContent="No file selected";st.classList.remove("done");bt.textContent="Upload";bt.classList.remove("done");row.classList.remove("is-done");ic.innerHTML=FILE_ICON;}
+      if(!file){ delete uploaded[doc.id];st.textContent="No file selected";st.classList.remove("done");bt.textContent="Upload";bt.classList.remove("done");row.classList.remove("is-done");ic.innerHTML=FILE_ICON; updateProgress(); return; }
+      st.textContent="Reading "+file.name+"…"; st.classList.remove("done"); bt.classList.add("disabled");
+      try{
+        // Read the file into memory right away. Waiting until submit to read it risks the
+        // browser losing access to the original file (e.g. tab backgrounded during a call),
+        // which throws a "file or directory could not be found" error at submit time.
+        const bytes=await file.arrayBuffer();
+        uploaded[doc.id]={name:file.name,type:file.type,size:file.size,bytes:bytes};
+        st.textContent=file.name;st.classList.add("done");bt.textContent="Replace";bt.classList.remove("disabled");bt.classList.add("done");row.classList.add("is-done");ic.innerHTML=CHECK_ICON;
+      }catch(err){
+        delete uploaded[doc.id];
+        st.textContent="Couldn't read that file — please try selecting it again";st.classList.remove("done");bt.textContent="Upload";bt.classList.remove("disabled");bt.classList.remove("done");row.classList.remove("is-done");ic.innerHTML=FILE_ICON;
+        e.target.value="";
+      }
       updateProgress();
     });
   });
@@ -264,14 +277,14 @@ buildList(); applyMarital(); updateProgress();
 
 async function buildZip(safeName){
   const zip=new JSZip();
-  for(const doc of documents){ const file=uploaded[doc.id]; if(file){ const ext=file.name.includes(".")?file.name.substring(file.name.lastIndexOf(".")):""; const label=doc.name.split(" – ")[0].replace(/[^a-z0-9]+/gi,"_"); zip.file(label+"_"+safeName+ext, await file.arrayBuffer()); } }
+  for(const doc of documents){ const f=uploaded[doc.id]; if(f){ const ext=f.name.includes(".")?f.name.substring(f.name.lastIndexOf(".")):""; const label=doc.name.split(" – ")[0].replace(/[^a-z0-9]+/gi,"_"); zip.file(label+"_"+safeName+ext, f.bytes); } }
   return zip.generateAsync({type:"blob"});
 }
 async function buildMergedPdf(safeName){
   const { PDFDocument } = PDFLib; const merged=await PDFDocument.create();
   for(const doc of documents){
-    const file=uploaded[doc.id]; if(!file) continue;
-    const bytes=await file.arrayBuffer(); const nm=file.name.toLowerCase();
+    const f=uploaded[doc.id]; if(!f) continue;
+    const bytes=f.bytes; const nm=f.name.toLowerCase();
     try{
       if(nm.endsWith(".pdf")){ const src=await PDFDocument.load(bytes,{ignoreEncryption:true}); const pages=await merged.copyPages(src,src.getPageIndices()); pages.forEach(function(p){merged.addPage(p);}); }
       else if(nm.endsWith(".png")||nm.endsWith(".jpg")||nm.endsWith(".jpeg")){ const img=nm.endsWith(".png")?await merged.embedPng(bytes):await merged.embedJpg(bytes); const pw=595.28,ph=841.89; const page=merged.addPage([pw,ph]); const s=Math.min((pw-40)/img.width,(ph-40)/img.height,1); const w=img.width*s,h=img.height*s; page.drawImage(img,{x:(pw-w)/2,y:(ph-h)/2,width:w,height:h}); }
@@ -281,7 +294,7 @@ async function buildMergedPdf(safeName){
 }
 function collectFields(){
   const data={};
-  FIELDS.forEach(function(f){ const el=document.getElementById(f.id); const base=f.sheetKey||f.label; let key=base; if(f.id.indexOf("l_")===0) key="Local - "+base; else if(f.id.indexOf("p_")===0) key="Permanent - "+base; data[key]= el ? el.value.trim() : ""; });
+  FIELDS.forEach(function(f){ const el=document.getElementById(f.id); let key=f.label; if(f.id.indexOf("l_")===0) key="Local - "+f.label; else if(f.id.indexOf("p_")===0) key="Permanent - "+f.label; data[key]= el ? el.value.trim() : ""; });
   return data;
 }
 function showResult(type,msg){
@@ -314,7 +327,7 @@ form.addEventListener("submit",async function(e){
     const res=await fetch(SUBMIT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:name,email:email,pdfPath:pdfPath,zipPath:zipPath,size:pdfBlob.size+zipBlob.size})});
     if(res.ok){ btn.innerHTML="&#10003; Submitted"; form.querySelectorAll("input,select,button").forEach(function(el){el.disabled=true;}); window.location.href="thankyou.html"; }
     else{ const d=await res.text(); showResult("error","Your files uploaded, but notifying HR failed (error "+res.status+"). Please contact HR. Details: "+d); reset(); }
-  }catch(err){ showResult("error","Could not submit: "+err.message+". Please check your connection and try again."); reset(); }
+  }catch(err){ showResult("error","Could not submit: "+err.message+". Please try again — if this keeps happening, re-select your documents and resubmit."); reset(); }
 });
 document.getElementById("downloadBtn").addEventListener("click",async function(){
   const name=document.getElementById("candidateName").value.trim()||"Candidate";
