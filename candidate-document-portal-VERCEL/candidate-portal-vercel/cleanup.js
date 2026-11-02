@@ -29,7 +29,15 @@ module.exports = async (req, res) => {
 
     const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
     const BUCKET = process.env.SUPABASE_BUCKET || "candidate-docs";
-    const retentionDays = Number(process.env.RETENTION_DAYS || 30);
+    // Normal daily runs use RETENTION_DAYS (default 30). You can override per-call
+    // with ?days=N — e.g. ?days=7 keeps a week, ?days=0 deletes EVERYTHING in the
+    // bucket (useful one time to recover from an over-quota restriction). The ?days
+    // override only works when the request carries the CRON_SECRET.
+    let retentionDays = Number(process.env.RETENTION_DAYS || 30);
+    const daysOverride = req.query && req.query.days;
+    if (daysOverride !== undefined && daysOverride !== "" && Number.isFinite(Number(daysOverride))) {
+      retentionDays = Number(daysOverride);
+    }
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       return res.status(500).send("Storage is not configured on the server.");
     }
